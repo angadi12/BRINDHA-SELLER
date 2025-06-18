@@ -1,11 +1,26 @@
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/dashboard", "/orders", "/products", "/","/product-seller","/service-providers","/revenue","/messages","/customer-service"];
+const protectedRoutes = [
+  "/dashboard",
+  "/profile",
+  "/earnings",
+  "/",
+  "/Order-Management",
+  "/Product-management",
+  "/revenue",
+  "/messages",
+  "/customer-service",
+];
+
 const authRoutes = ["/Signin"];
+const notVerifiedRoute = "/notverified";
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
+  const isVerified = request.cookies.get("isCompanyVerified")?.value;
+
+  const unverifiedStatuses = ["Pending", "Requestsend"];
 
   const isProtected = protectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
@@ -14,14 +29,26 @@ export function middleware(request) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  if (isProtected && token) {
-    const loginUrl = new URL("/Signin", request.url);
-    return NextResponse.redirect(loginUrl);
+  const isNotVerifiedPage = pathname === notVerifiedRoute;
+
+  // 🔐 If not logged in, block access to protected + notverified routes
+  if ((isProtected || isNotVerifiedPage) && !token) {
+    return NextResponse.redirect(new URL("/Signin", request.url));
   }
 
+  // ⛔ If verified user tries to access /notverified, redirect to dashboard
+  if (token && !unverifiedStatuses.includes(isVerified) && isNotVerifiedPage) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // 🚫 If logged in + unverified (pending or requestsend), redirect to /notverified
+  if (token && unverifiedStatuses.includes(isVerified) && isProtected && !isNotVerifiedPage) {
+    return NextResponse.redirect(new URL(notVerifiedRoute, request.url));
+  }
+
+  // 🔁 If logged in and tries to access /Signin, redirect to dashboard
   if (isAuthRoute && token) {
-    const dashboardUrl = new URL("/", request.url);
-    return NextResponse.redirect(dashboardUrl);
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
@@ -31,13 +58,14 @@ export const config = {
   matcher: [
     "/",
     "/dashboard/:path*",
-    "/orders/:path*",
+    "/profile",
     "/products/:path*",
     "/Signin",
-    "/product-seller",
-    "/service-providers",
-    "/revenue",
+    "/Product-management",
+    "/Order-Management",
+    "/earnings",
     "/messages",
-    "/customer-service"
+    "/customer-service",
+    "/notverified",
   ],
 };

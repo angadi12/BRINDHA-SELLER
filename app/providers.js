@@ -12,7 +12,7 @@ export function NextuiProviderWrapper({ children }) {
   return (
     <HeroUIProvider>
       <section>
-       {pathname !== "/Signin" ? <main className="grid grid-cols-1 md:grid-cols-[auto_1fr] w-full h-screen overflow-hidden ">
+       {(pathname !== "/Signin" && pathname!=="/notverified") ? <main className="grid grid-cols-1 md:grid-cols-[auto_1fr] w-full h-screen overflow-hidden ">
         {pathname !== "/Signin" &&  <div className="w-full">
             <Sidenav/>
           </div>}

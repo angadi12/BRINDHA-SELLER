@@ -37,9 +37,9 @@ export default function Component() {
         {/* Logo Upload Area */}
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center mb-8">
           <div className="flex flex-col items-center">
-            <Upload className="w-12 h-12 text-teal-600 mb-2" />
+            <Upload className="w-12 h-12 text-[#106C83] mb-2" />
             <p className="text-gray-600 font-medium">
-              Drop your <span className="text-teal-600">Business Logo</span>
+              Drop your <span className="text-[#106C83]">Business Logo</span>
             </p>
             <p className="text-sm text-gray-500">Recommended: PNG, JPG & GIF files</p>
           </div>
@@ -100,13 +100,13 @@ export default function Component() {
               <Checkbox
                 id="withdrawal"
                 defaultChecked
-                className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                className="data-[state=checked]:bg-[#106C83] data-[state=checked]:border-[#106C83]"
               />
               <label htmlFor="withdrawal" className="text-sm text-gray-700">
                 Use this account for my withdrawals
               </label>
             </div>
-            <button className="text-teal-600 text-sm font-medium hover:underline">+ Add New Account</button>
+            <button className="text-[#106C83] text-sm font-medium hover:underline">+ Add New Account</button>
           </div>
         </div>
       </div>
@@ -153,10 +153,10 @@ export default function Component() {
           />
         </div>
       </div>
+      <div className=" p-6 rounded-2xl">
 
-      {/* Action Buttons */}
-      <div className="flex gap-4 pt-4">
-        <Button className="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-medium">
+      <div className="flex gap-4 mb-8">
+        <Button className="flex-1 bg-[#106C83] hover:bg-[#106C83] text-white py-3 rounded-lg font-medium">
           Save Changes
         </Button>
         <Button
@@ -166,6 +166,10 @@ export default function Component() {
           Cancel
         </Button>
       </div>
+        
+      </div>
+
+      {/* Action Buttons */}
     </ScrollArea>
   )
 }
