@@ -1,9 +1,21 @@
-import { Skeleton } from "@/components/ui/skeleton"
+"use client";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSelector } from "react-redux";
 
 export default function Revenueskeleton() {
+  const { earningGraph, loadingEarning, errorEarning } = useSelector(
+    (state) => state.dashboard
+  );
+
+ 
+console.log(loadingEarning)
+
+
   return (
-    <div className="p-2 bg-white rounded-lg border">
+    <div className="p-2 bg-white rounded-lg border ">
       {/* Header */}
+
+     
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-6">
           <Skeleton className="h-4 w-48" />
@@ -36,9 +48,13 @@ export default function Revenueskeleton() {
         {/* Chart container */}
         <div className="ml-16 relative">
           {/* Chart background */}
-          <div className="h-60 bg-gray-50 rounded relative overflow-hidden">
+          <div className="h-60 bg-gray-50 rounded relative overflow-hidden"></div>
          
-          </div>
+ {loadingEarning && (
+        <div className="absolute w-full -translate-y-1/2 -translate-x-1/2 top-1/3 left-11/12 right-1/2 ">
+          <span className="loader2"></span>
+        </div>
+      )}
 
           {/* X-axis labels */}
           <div className="flex justify-between mt-4 text-sm text-gray-500">
@@ -63,5 +79,5 @@ export default function Revenueskeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

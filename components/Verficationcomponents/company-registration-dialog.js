@@ -29,9 +29,12 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Sendverification } from "@/lib/API/Auth/Auth";
 import { Uploadfiles } from "@/lib/API/fileupload/multiplefile";
 import { useToast } from "@/components/ui/toast-provider";
+import { getVerificationStatusThunk } from "@/lib/Redux/Slices/vendorSlice";
+import { useDispatch } from "react-redux";
 
 export default function CompanyRegistrationDialog() {
   const { addToast } = useToast();
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -202,6 +205,8 @@ export default function CompanyRegistrationDialog() {
           variant: "success",
           duration: 5000,
         });
+        dispatch(getVerificationStatusThunk());
+        
         // Optionally reset form here
       } else {
         throw new Error(result?.message || "Verification failed");

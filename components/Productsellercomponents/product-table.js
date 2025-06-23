@@ -28,12 +28,12 @@ import {
 } from "@/components/ui/pagination";
 
 export default function ProductTable() {
-   const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const [totalPages, setTotalPages] = useState(1);   // Track total pages
-  const [totalRecords, setTotalRecords] = useState(0); // Track total records
-  const [perPage, setPerPage] = useState(10); // Items per page
+   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);  
+  const [totalRecords, setTotalRecords] = useState(0); 
+  const [perPage, setPerPage] = useState(10); 
 
-  const [selectedTab, setSelectedTab] = useState("approved"); // Track selected tab
+  const [selectedTab, setSelectedTab] = useState("approved"); 
   const params = useParams();
   const router = useRouter();
   const { id } = params;

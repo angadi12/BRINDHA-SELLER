@@ -18,13 +18,14 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import Revenueskeleton from "./revenue-overview-skeleton";
+import { fetchEarningGraph } from "@/lib/Redux/Slices/dashboardSlice";
 
 export default function RevenueOverview() {
   const [selectedValue, setSelectedValue] = useState("week");
 
   const dispatch = useDispatch();
-  const { revenueoverview, loadingrevnue, errorrevenue } = useSelector(
-    (state) => state.sellar
+  const { earningGraph, loadingEarning, errorEarning } = useSelector(
+    (state) => state.dashboard
   );
 
   const handleSelectChange = (value) => {
@@ -32,18 +33,18 @@ export default function RevenueOverview() {
   };
 
   useEffect(() => {
-    dispatch(fetchrevenueandcommision(selectedValue));
+    dispatch(fetchEarningGraph(selectedValue));
   }, [dispatch, selectedValue]);
 
   return (
     <>
-      {loadingrevnue ? (
+      {loadingEarning ? (
         <Revenueskeleton />
-      ) : errorrevenue ? (
+      ) : errorEarning ? (
         <div className="flex items-center justify-center py-10 text-red-500">
-          {errorrevenue}
+          {errorEarning}
         </div>
-      ) : !revenueoverview ? (
+      ) : !earningGraph ? (
         <div className="text-center py-8 text-gray-500">No data available</div>
       ) : (
         <div className="w-full rounded-lg border bg-white p-6 col-span-2">
@@ -54,11 +55,11 @@ export default function RevenueOverview() {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="h-5 w-5 rounded bg-[#23BB4C]"></div>
-                <span className="text-gray-800 text-sm ">Revenue</span>
+                <span className="text-gray-800 text-sm ">Earning</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-5 w-5 rounded bg-[#FFB300]"></div>
-                <span className="text-gray-800 text-sm">Commission</span>
+                <span className="text-gray-800 text-sm">Orders</span>
               </div>
               <div className="flex items-center gap-2 ml-4 shrink-0">
                 <Select
@@ -71,7 +72,6 @@ export default function RevenueOverview() {
                   <SelectContent>
                     <SelectItem value="week">This Week</SelectItem>
                     <SelectItem value="month">This Month</SelectItem>
-                    <SelectItem value="year">This Year</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -85,19 +85,19 @@ export default function RevenueOverview() {
 
             <ChartContainer
               config={{
-                revenue: {
-                  label: "Revenue",
+                earning: {
+                  label: "Earning",
                   color: "#23BB4C",
                 },
-                commission: {
-                  label: "Commission",
+                orders: {
+                  label: "Orders",
                   color: "#FFB300",
                 },
               }}
               className="h-60 w-full"
             >
               <AreaChart
-                data={revenueoverview}
+                data={earningGraph}
                 margin={{ top: 10, right: 10, left: 5, bottom: 10 }}
               >
                 <defs>
@@ -144,7 +144,7 @@ export default function RevenueOverview() {
                 />
                 <Area
                   type="monotone"
-                  dataKey="revenue"
+                  dataKey="earning"
                   stroke="#23BB4C"
                   strokeWidth={2}
                   fillOpacity={1}
@@ -164,7 +164,7 @@ export default function RevenueOverview() {
                 />
                 <Area
                   type="monotone"
-                  dataKey="commission"
+                  dataKey="orders"
                   stroke="#FFB300"
                   strokeWidth={2}
                   fillOpacity={1}

@@ -17,6 +17,7 @@ import {
   PanelLeftOpen,
   PackageCheck,
   List,
+  UserRoundPen
 } from "lucide-react";
 import User from "@/public/Asset/User.png";
 import { usePathname, useRouter } from "next/navigation";
@@ -37,12 +38,12 @@ const Sidenav = () => {
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/" },
     { label: "Product management", icon: PackageSearch, path: "/Product-management" },
-    { label: "Order Management", icon: List, path: "/Order-Management" },
+    { label: "Order Management", icon: PackageCheck, path: "/Order-Management" },
     // { label: "Service Providers", icon: Heart, path: "/service-providers" },
-    { label: "Earnings", icon: PackageCheck, path: "/earnings" },
+    { label: "Earnings", icon: ReceiptIndianRupee, path: "/earnings" },
    
     { label: "Messages", icon: Mail, path: "/messages" },
-    { label: "Customer's Service", icon: Users, path: "/customer-service" },
+    { label: "Customer Reviews", icon: Users, path: "/customer-reviews" },
   ];
 
   const isActive = (path) => {
@@ -188,7 +189,7 @@ const Sidenav = () => {
                           : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
-                      <Settings size={18} />
+                      <UserRoundPen size={18} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="p-2">
@@ -204,7 +205,7 @@ const Sidenav = () => {
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  <Settings size={15} className="mr-2" />
+                  <UserRoundPen size={15} className="mr-2" />
                   Profile
                 </Button>
               )}

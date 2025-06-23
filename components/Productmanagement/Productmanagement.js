@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,11 +11,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllProducts } from "@/lib/Redux/Slices/productSlice";
 
 const Productmanagement = () => {
   const [activeTab, setActiveTab] = useState("seller");
   const router = useRouter();
+  const dispatch = useDispatch();
+  const {allProducts,loadingAll,errorAll} = useSelector((state) => state.product);
+  const { categories, loading, error,selectedCategoryId } = useSelector((state) => state.master);
 
+  useEffect(() => {
+    dispatch(
+      fetchAllProducts({
+        Status:"Approved",
+        CategoryId:selectedCategoryId,
+        SubcategoryId: "",
+        Measturments: "",
+        page: 1,
+        limit: 10,
+      })
+    );
+  }, [dispatch,selectedCategoryId]);
+
+console.log(allProducts)
+console.log(loadingAll)
   return (
     <div className="w-full rounded-lg border bg-white p-3 mt-4 relative">
       <div className="flex w-full items-center justify-between ">
@@ -47,7 +67,7 @@ const Productmanagement = () => {
 
           <div className="absolute right-4 top-4 ">
             <Button
-              onClick={() => router.push("/addproduct")}
+              onClick={() => router.push("/Product-management/addproduct")}
               variant="default"
               className="bg-[#106C83] hover:bg-[#106C83] cursor-pointer"
             >
@@ -72,25 +92,31 @@ const Productmanagement = () => {
             <Table>
               <TableHeader className="bg-gray-100 border border-gray-300">
                 <TableRow>
-                  <TableHead className="text-[#9C9C9C] text-sm font-medium">
-                    BUSINESS NAME
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    product name
                   </TableHead>
-                  <TableHead className="text-[#9C9C9C] text-sm font-medium">
-                    LOCATION
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    id
                   </TableHead>
-                  <TableHead className="text-[#9C9C9C] text-sm font-medium">
-                    OWNER NAME
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    created on
                   </TableHead>
-                  <TableHead className="text-[#9C9C9C] text-sm font-medium">
-                    EMAIL ID
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    product price
                   </TableHead>
-                  <TableHead className="text-[#9C9C9C] text-sm font-medium">
-                    CONTACT
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    discounts
                   </TableHead>
-                  <TableHead className="text-[#9C9C9C] text-sm font-medium">
-                    STATUS
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    Price on display
                   </TableHead>
-                  <TableHead className="text-[#9C9C9C] text-sm font-medium">
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    status
+                  </TableHead>
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
+                    LIVE PRODUCT
+                  </TableHead>
+                  <TableHead className="text-[#9C9C9C] text-sm font-medium uppercase">
                     ACTION
                   </TableHead>
                 </TableRow>
@@ -154,7 +180,7 @@ const Productmanagement = () => {
 
           <TabsContent value="provider" className="mt-4">
             <div className="text-center py-8 text-gray-500">
-              No service provider applications available
+              No Product available
             </div>
           </TabsContent>
         </Tabs>

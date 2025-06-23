@@ -28,74 +28,6 @@ export default function MessagingInterface() {
     dispatch(fetchAllTickets(""));
   }, [dispatch]);
 
-  // Sample data
-  // const contacts = [
-  //   {
-  //     id: "1",
-  //     name: "Arjun Mahadev",
-  //     avatar: "/placeholder.svg?height=50&width=50",
-  //     lastMessage: "Hi my name is arjun, I want to...",
-  //     lastMessageTime: "12:11 PM",
-  //     email: "arjunmaha@gmail.com",
-  //     phone: "+91 7839309837",
-  //     messages: [
-  //       {
-  //         id: "m1",
-  //         content: "Hi, I does elite sewing machine come with Table?",
-  //         sender: "user",
-  //         timestamp: "12:11 PM",
-  //       },
-  //       {
-  //         id: "m2",
-  //         content:
-  //           "No, we provide only the machine! If you want a table buy separately.",
-  //         sender: "agent",
-  //         timestamp: "12:11 PM",
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Jennifer Wills",
-  //     avatar: "/placeholder.svg?height=50&width=50",
-  //     lastMessage: "Hi my name is sheela, I want to...",
-  //     lastMessageTime: "12:11 PM",
-  //     messages: [],
-  //   },
-  //   {
-  //     id: "3",
-  //     name: "Medona Miller",
-  //     avatar: "/placeholder.svg?height=50&width=50",
-  //     lastMessage: "Hi my name is sheela, I want to...",
-  //     lastMessageTime: "12:11 PM",
-  //     messages: [],
-  //   },
-  //   {
-  //     id: "4",
-  //     name: "Emmy White",
-  //     avatar: "/placeholder.svg?height=50&width=50",
-  //     lastMessage: "Hi my name is sheela, I want to...",
-  //     lastMessageTime: "12:11 PM",
-  //     messages: [],
-  //   },
-  //   {
-  //     id: "5",
-  //     name: "Robert Carl",
-  //     avatar: "/placeholder.svg?height=50&width=50",
-  //     lastMessage: "Hi my name is sheela, I want to...",
-  //     lastMessageTime: "12:11 PM",
-  //     messages: [],
-  //   },
-  //   {
-  //     id: "6",
-  //     name: "Robert Carl",
-  //     avatar: "/placeholder.svg?height=50&width=50",
-  //     lastMessage: "Hi my name is sheela, I want to...",
-  //     lastMessageTime: "12:11 PM",
-  //     messages: [],
-  //   },
-  // ];
-
   const [selectedContact, setSelectedContact] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [activeTab, setActiveTab] = useState("customers");
@@ -160,43 +92,7 @@ export default function MessagingInterface() {
 
   return (
     <ScrollArea className=" mx-auto p-4 w-full h-screen pb-14 mb-8">
-      {/* Top Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Card className="p-4 flex shadow-none rounded-md flex-row items-start">
-          <div className="bg-white p-3 rounded-md mr-4 border">
-            <Image
-              src={messages}
-              alt="message-icon"
-              className="h-6 w-6 text-gray-700"
-            />
-          </div>
-          <div className="flex-grow">
-            <p className="text-gray-700 font-medium">Messages</p>
-            <p className="text-xl font-bold text-[#106C83]">7,782</p>
-          </div>
-          <Button variant="outline" className="ml-auto">
-            This Week <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </Card>
-
-        <Card className="p-4 flex shadow-none rounded-md flex-row items-start">
-          <div className="bg-white p-3 rounded-md mr-4 border">
-            <Image
-              src={accountpending}
-              alt="accountpending-icon"
-              className="h-6 w-6 text-gray-700"
-            />
-          </div>
-          <div className="flex-grow">
-            <p className="text-gray-700 font-medium">Pending Response</p>
-            <p className="text-xl font-bold text-[#106C83]">555</p>
-          </div>
-          <Button variant="outline" className="ml-auto">
-            This Week <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </Card>
-      </div>
-
+     
       {/* Messaging Interface */}
       <Card className="overflow-hidden shadow-none rounded-md mb-4 p-0 w-full">
         <div className="flex flex-col h-[500px]">
@@ -210,10 +106,10 @@ export default function MessagingInterface() {
 
           <div className="flex h-full w-full">
             {/* Left Sidebar */}
-            <div className="w-1/3 border-r flex flex-col h-full">
+            <div className="w-1/3 border-r flex flex-col h-full ">
               {/* Tabs */}
               <Tabs defaultValue="customers" className="w-full">
-                <TabsList className="grid grid-cols-2 h-auto p-0 w-full">
+                <TabsList className="grid grid-cols-1 h-auto p-0 w-full">
                   <TabsTrigger
                     value="customers"
                     onClick={() => setActiveTab("customers")}
@@ -223,19 +119,9 @@ export default function MessagingInterface() {
                         : "bg-white text-black"
                     }`}
                   >
-                    Customers
+                    Brindha
                   </TabsTrigger>
-                  <TabsTrigger
-                    value="sellers"
-                    onClick={() => setActiveTab("sellers")}
-                    className={`rounded-none py-2 cursor-pointer ${
-                      activeTab === "sellers"
-                        ? " text-[#106C83] focus:bg-[#106C83]"
-                        : "bg-white text-black"
-                    }`}
-                  >
-                    Sellers
-                  </TabsTrigger>
+                 
                 
                 </TabsList>
               </Tabs>
