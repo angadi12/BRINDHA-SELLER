@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -168,7 +169,7 @@ console.log(loadingAll)
                           View Profile
                         </span>
                       ) : (
-                        <DocumentApprovalPage />
+                        ""
                       )}
                     </TableCell>
                   </TableRow>
