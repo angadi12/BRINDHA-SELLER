@@ -24,9 +24,10 @@ import {
   fetchAllMeasurement,
 } from "@/lib/Redux/Slices/masterSlice";
 import { Uploadfiles } from "@/lib/API/fileupload/multiplefile";
-import { Addproducts } from "@/lib/API/Product/product";
-import Productimage from "@/public/Asset/Product1.png"
-import { useRouter } from "next/navigation";
+import { Updateproducts } from "@/lib/API/Product/product";
+import Productimage from "@/public/Asset/Product1.png";
+import { useParams, useRouter } from "next/navigation";
+import { fetchProductById } from "@/lib/Redux/Slices/productSlice";
 const defaultSizes = [
   "Small",
   "Medium",
@@ -93,7 +94,9 @@ export default function Component() {
   const fileInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
-const router=useRouter()
+  const router = useRouter();
+  const params = useParams();
+  const { id } = params;
 
   const [formData, setFormData] = useState({
     Name: "Elite Sewing Machine",
@@ -132,10 +135,40 @@ const router=useRouter()
   }, [dispatch]);
 
   const { measurement } = useSelector((state) => state.master);
+  const { singleProduct, loadingById, errorById } = useSelector(
+    (state) => state.product
+  );
 
   useEffect(() => {
     dispatch(fetchAllMeasurement());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductById(id));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (singleProduct) {
+      setFormData({
+        Name: singleProduct.Name,
+        Description: singleProduct.Description,
+        CategoryId: singleProduct.CategoryId,
+        SubcategoryId: singleProduct.SubcategoryId,
+        Measturments: singleProduct.Measturments,
+        Features: singleProduct.Features || [],
+        Yourprice: singleProduct.Yourprice,
+        SellingPrice: singleProduct.SellingPrice,
+        colors: singleProduct.colors || defaultColors,
+        Images: singleProduct.Images || [],
+        Ecofriendly: singleProduct.Ecofriendly,
+        Stock: singleProduct.Stock,
+      });
+      setPreviewImage(singleProduct.Images[0]);
+      setthumnailimage(singleProduct.Images); // Just use as-is
+    }
+  }, [singleProduct]);
 
   const uniqueCategories = [
     ...new Map(
@@ -147,8 +180,6 @@ const router=useRouter()
     (item) => item.CategoryId._id === formData.CategoryId
   );
 
-  console.log(formData);
-
   const handleInputChange = (key, value) => {
     setFormData((prev) => {
       const updated = { ...prev, [key]: value };
@@ -159,63 +190,15 @@ const router=useRouter()
     });
   };
 
-  // const handleInputChange = (field, value) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [field]: value,
-  //   }));
-  // };
-
-  const handleSizeToggle = (size, checked) => {
-    if (checked) {
-      setFormData((prev) => ({
-        ...prev,
-        sizes: [...prev.sizes, size],
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        sizes: prev.sizes.filter((s) => s !== size),
-      }));
-    }
-  };
-
-  // const handleFileUpload = (event) => {
-  //   const files = Array.from(event.target.files || []);
-  //   if (files.length > 0) {
-  //     const file = files[0];
-  //     const imageUrl = URL.createObjectURL(file);
-  //     setPreviewImage(imageUrl);
-
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       Images: files,
-  //     }));
-  //   }
-  // };
-
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 0) {
       const urls = files.map((file) => URL.createObjectURL(file));
-      setPreviewImage(urls[0]); // Default preview is the first image
+      setPreviewImage(urls[0]);
       setthumnailimage(urls);
       setFormData((prev) => ({
         ...prev,
-        Images: files, // Store image URLs instead of File objects
-      }));
-    }
-  };
-
-  const calculateDiscount = () => {
-    const yourPrice = Number.parseFloat(formData.yourPrice) || 0;
-    const sellingPrice = Number.parseFloat(formData.sellingPrice) || 0;
-
-    if (sellingPrice > 0) {
-      const discount = ((sellingPrice - yourPrice) / sellingPrice) * 100;
-      setFormData((prev) => ({
-        ...prev,
-        discountPercentage: Math.max(0, discount).toFixed(0),
+        Images: files,
       }));
     }
   };
@@ -226,7 +209,6 @@ const router=useRouter()
       [field]: value,
     }));
 
-    // Auto-calculate discount when prices change
     setTimeout(() => {
       calculateDiscount();
     }, 100);
@@ -247,24 +229,6 @@ const router=useRouter()
     setFormData((prev) => ({
       ...prev,
       colors: prev.colors.filter((color) => color !== colorToRemove),
-    }));
-  };
-
-  const handleAddSize = () => {
-    if (newSize.trim() && !formData.sizes.includes(newSize.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        sizes: [...prev.sizes, newSize.trim()],
-      }));
-      setNewSize("");
-      setShowSizePicker(false);
-    }
-  };
-
-  const handleRemoveSize = (sizeToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      sizes: prev.sizes.filter((size) => size !== sizeToRemove),
     }));
   };
 
@@ -291,6 +255,14 @@ const router=useRouter()
       addToast({
         title: "Error",
         description: "Product name is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+    if (!id) {
+      addToast({
+        title: "Error",
+        description: "Product ID is required",
         variant: "destructive",
       });
       return false;
@@ -334,115 +306,66 @@ const router=useRouter()
     return true;
   };
 
-  // const handleAddProduct = async () => {
-  //   if (!validateForm()) return;
-
-  //   setIsLoading(true);
-
-  //   try {
-  //     // Create FormData for file upload
-  //     const formDataToSend = new FormData();
-
-  //     // Add product data
-  //     formDataToSend.append("Name", formData.Name);
-  //     formDataToSend.append("Description", formData.Description);
-  //     formDataToSend.append("CategoryId", formData.CategoryId);
-  //     formDataToSend.append("Measturments", formData.Measturments);
-  //     formDataToSend.append("Features", JSON.stringify(formData.Features));
-  //     formDataToSend.append("Yourprice", formData.Yourprice);
-  //     formDataToSend.append("SellingPrice", formData.SellingPrice);
-  //     formDataToSend.append("colors", JSON.stringify(formData.colors));
-
-  //     // Add media files
-  //     formData.Images.forEach((file, index) => {
-  //       formDataToSend.append(`media_${index}`, file);
-  //     });
-
-  //     // Make API call - replace with your actual API endpoint
-  //     const response = await fetch("/api/products/add", {
-  //       method: "POST",
-  //       body: formDataToSend,
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to add product");
-  //     }
-
-  //     const result = await response.json();
-
-  //     addToast({
-  //       title: "Success",
-  //       description: "Product added successfully!",
-  //       variant: "default",
-  //     });
-
-  //     // Reset form or redirect as needed
-  //     console.log("Product added:", result);
-  //   } catch (error) {
-  //     console.error("Error adding product:", error);
-  //     addToast({
-  //       title: "Error",
-  //       description: "Failed to add product. Please try again.",
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const handleUpdateProduct = async () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
-      // Step 1: Upload images to Cloudinary
-      const uploadResponse = await Uploadfiles(formData.Images); // uses your Uploadfiles util
+      let uploadedImageUrls = [];
 
-      if (!uploadResponse || uploadResponse?.status !== true) {
-        throw new Error("Image upload failed");
+      // Check if any new images are uploaded (Blob URLs)
+      const isNewFile = (img) =>
+        (typeof img === "string" && img.startsWith("blob:")) ||
+        (typeof img === "object" && img instanceof File);
+
+      const newImages = formData.Images.filter(isNewFile);
+
+      console.log(newImages);
+      if (newImages.length > 0) {
+        // If new images are uploaded, upload them to Cloudinary
+        const uploadResponse = await Uploadfiles(formData.Images);
+        console.log(uploadResponse);
+        if (!uploadResponse || uploadResponse?.status !== true) {
+          throw new Error("Image upload failed");
+        }
+
+        uploadedImageUrls = uploadResponse?.data?.map((img) => img); // Cloudinary URLs returned from backend
+      } else {
+        // If no new images uploaded, use existing images (Cloudinary URLs)
+        uploadedImageUrls = formData.Images || []; // Use the existing images (Cloudinary URLs)
       }
-
-      // Step 2: Extract image URLs from response
-      const uploadedImageUrls = uploadResponse?.data?.map((img) => img);
-
-      if (!uploadedImageUrls || uploadedImageUrls.length === 0) {
-        throw new Error("No image URLs returned");
-      }
-
-      // Step 3: Build final product data object
       const productPayload = {
         Name: formData.Name,
         Description: formData.Description,
         CategoryId: formData.CategoryId,
         SubcategoryId: formData.SubcategoryId,
         Measturments: formData.Measturments,
-        Features: formData.Features, // already JSON string in API
+        Features: formData.Features,
         Yourprice: formData.Yourprice,
         Stock: formData.Stock,
         SellingPrice: formData.SellingPrice,
         colors: formData.colors,
-        Images: uploadedImageUrls, // <-- Important!
+        Images: uploadedImageUrls,
       };
 
-      // Step 4: Send product data to backend
-      const result = await Addproducts(productPayload);
+      const result = await Updateproducts(id, productPayload);
 
       if (!result || result.status !== true) {
-        throw new Error(result?.message || "Product creation failed");
+        throw new Error(result?.message || "Product update failed");
       }
 
       addToast({
         title: "Success",
-        description: "Product added successfully!",
-        variant: "default",
+        description: "Product Updated successfully!",
+        variant: "success",
       });
     } catch (error) {
-      console.error("Error adding product:", error);
+      console.error("Error while update the product:", error);
       addToast({
         title: "Error",
         description:
-          error.message || "Failed to add product. Please try again.",
+          error.message || "Failed to update product. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -450,40 +373,9 @@ const router=useRouter()
     }
   };
 
-  const handleAddBulkProduct = async () => {
-    // Implement bulk product logic here
-    addToast({
-      title: "Info",
-      description: "Bulk product feature coming soon!",
-      variant: "default",
-    });
-  };
-
-  const handleCancel = () => {
-    setFormData({
-      Name: "",
-      Description: "",
-      CategoryId: "",
-      SubcategoryId: "",
-      Measturments: "",
-      Features: [],
-      Yourprice: "",
-      SellingPrice: "",
-      Ecofriendly: true,
-      colors: defaultColors,
-      Images: [],
-      Stock: 0,
-    });
-    setPreviewImage("/sewing-machine.png");
-    addToast({
-      title: "Info",
-      description: "Form cleared",
-      variant: "default",
-    });
-  };
-
   return (
-    <ScrollArea className="h-screen pb-14">
+    <>
+   {loadingById? <div className="w-full h-screen flex justify-center items-center"><span className="loader2"></span></div>: <ScrollArea className="h-screen pb-14">
       <div className="flex gap-6 p-6 bg-gray-50 min-h-screen">
         {/* Left Side - Preview */}
         <div className="w-80 bg-white rounded-lg p-4 h-fit border">
@@ -543,7 +435,8 @@ const router=useRouter()
             </div>
           </div>
           <div className="mb-4 ext-sm text-gray-600">
-           Stock :<p className="text-black inline-block text-sm">X{formData.Stock}</p>
+            Stock :
+            <p className="text-black inline-block text-sm">X{formData.Stock}</p>
           </div>
           {/* Size Selection */}
           <div className="mb-4">
@@ -554,7 +447,7 @@ const router=useRouter()
                   key={size}
                   className="flex flex-col justify-items-start gap-1 w-full"
                 >
-                 <p>{size}</p>
+                  <p>{size}</p>
                 </div>
               ))}
             </div>
@@ -585,7 +478,7 @@ const router=useRouter()
             disabled={isLoading}
             className="w-full bg-[#106C83] hover:bg-[#0d5a6e] cursor-pointer text-white"
           >
-            {isLoading ? "Adding..." : "Add Product"}
+            {isLoading ? <span className="loader"></span> : "Update Product"}
           </Button>
         </div>
 
@@ -657,7 +550,6 @@ const router=useRouter()
 
           {/* Category and Measurement */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            
             <div>
               <label className="block w-full text-sm font-medium text-gray-700 mb-2">
                 Category
@@ -832,7 +724,6 @@ const router=useRouter()
 
           {/* Available Sizes and Colors */}
           <div className="grid grid-cols-1 gap-8 mb-6">
-          
             {/* Available Colors */}
             <div>
               <h4 className="font-semibold mb-3">Available Colors:</h4>
@@ -914,7 +805,7 @@ const router=useRouter()
                   type="button"
                   onClick={() => setShowColorPicker(true)}
                   variant="outline"
-                className="w-full cursor-pointer border-[#106C83] bg-[#106C83] text-white hover:bg-[#106C83] hover:text-white"
+                  className="w-full cursor-pointer border-[#106C83] bg-[#106C83] text-white hover:bg-[#106C83] hover:text-white"
                 >
                   + New Color
                 </Button>
@@ -979,7 +870,7 @@ const router=useRouter()
               {isLoading ? <span className="loader"></span> : "Update Product"}
             </Button>
             <Button
-              onClick={()=>router.back()}
+              onClick={() => router.back()}
               variant="outline"
               className="flex-1 text-red-600 border-red-600 hover:bg-red-50"
             >
@@ -988,6 +879,8 @@ const router=useRouter()
           </div>
         </div>
       </div>
-    </ScrollArea>
+    </ScrollArea>}
+
+    </>
   );
 }
