@@ -26,7 +26,7 @@ import {
 import { Uploadfiles } from "@/lib/API/fileupload/multiplefile";
 import { Addproducts } from "@/lib/API/Product/product";
 import Productimage from "@/public/Asset/Product1.png"
-
+import { useRouter } from "next/navigation";
 const defaultSizes = [
   "Small",
   "Medium",
@@ -93,6 +93,7 @@ export default function Component() {
   const fileInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
+const router=useRouter()
 
   const [formData, setFormData] = useState({
     Name: "Elite Sewing Machine",
@@ -389,7 +390,7 @@ export default function Component() {
   //   }
   // };
 
-  const handleAddProduct = async () => {
+  const handleUpdateProduct = async () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -416,7 +417,6 @@ export default function Component() {
         CategoryId: formData.CategoryId,
         SubcategoryId: formData.SubcategoryId,
         Measturments: formData.Measturments,
-        Ecofriendly: formData.Ecofriendly,
         Features: formData.Features, // already JSON string in API
         Yourprice: formData.Yourprice,
         Stock: formData.Stock,
@@ -435,24 +435,8 @@ export default function Component() {
       addToast({
         title: "Success",
         description: "Product added successfully!",
-        variant: "success",
+        variant: "default",
       });
- setFormData({
-      Name: "",
-      Description: "",
-      CategoryId: "",
-      SubcategoryId: "",
-      Measturments: "",
-      Features: [],
-      Yourprice: "",
-      SellingPrice: "",
-      Ecofriendly: true,
-      colors: defaultColors,
-      Images: [],
-      Stock: 0,
-    });
-    setPreviewImage(Productimage);
-      // Optionally reset form or redirect here
     } catch (error) {
       console.error("Error adding product:", error);
       addToast({
@@ -490,11 +474,11 @@ export default function Component() {
       Images: [],
       Stock: 0,
     });
-    setPreviewImage(Productimage);
+    setPreviewImage("/sewing-machine.png");
     addToast({
       title: "Info",
       description: "Form cleared",
-      variant: "success",
+      variant: "default",
     });
   };
 
@@ -597,7 +581,7 @@ export default function Component() {
 
           {/* Add Product Button */}
           <Button
-            onClick={handleAddProduct}
+            onClick={handleUpdateProduct}
             disabled={isLoading}
             className="w-full bg-[#106C83] hover:bg-[#0d5a6e] cursor-pointer text-white"
           >
@@ -663,21 +647,6 @@ export default function Component() {
               />
             </div>
 
-            {/* <div className="grid grid-cols-2 gap-4 mb-4">
-              <Input
-                placeholder="Product ID"
-                className="bg-gray-50"
-                value={formData.productId}
-                onChange={(e) => handleInputChange("productId", e.target.value)}
-              />
-              <Input
-                placeholder="Product Status"
-                className="bg-gray-50"
-                value={formData.status}
-                onChange={(e) => handleInputChange("status", e.target.value)}
-              />
-            </div> */}
-
             <Textarea
               placeholder="Product Description"
               className="bg-gray-50 min-h-[100px]"
@@ -688,88 +657,7 @@ export default function Component() {
 
           {/* Category and Measurement */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            {/* <div>
-              <label className="block w-full text-sm font-medium text-gray-700 mb-2">
-                Category
-              </label>
-              <Select
-                onValueChange={(value) => handleInputChange("CategoryId", value)}
-                value={formData.CategoryId}
-              >
-                <SelectTrigger
-                  id="location-select"
-                  className="w-full h-12 flex items-center gap-2"
-                >
-                  <SelectValue placeholder="Select Category">
-                    {loading ? (
-                      <span className="loader2"></span>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {categories?.find(
-                          (theater) => theater?._id === formData.CategoryId
-                        )?.CategoryId?.Categoryname || "Select category"}
-                      </div>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {loading ? (
-                    <span className="loader2"></span>
-                  ) : categories?.length > 0 ? (
-                    categories?.map((location) => (
-                      <SelectItem key={location._id} value={location._id}>
-                        {location?.CategoryId?.Categoryname}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <div className="p-1 text-center text-sm">
-                      No Category available
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block w-full text-sm font-medium text-gray-700 mb-2">
-               Sub-Category
-              </label>
-              <Select
-                onValueChange={(value) => handleInputChange("SubcategoryId", value)}
-                value={formData.SubcategoryId}
-              >
-                <SelectTrigger
-                  id="location-select"
-                  className="w-full h-12 flex items-center gap-2"
-                >
-                  <SelectValue placeholder="Select Sub-Category">
-                    {loading ? (
-                      <span className="loader2"></span>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {categories?.find(
-                          (theater) => theater?._id === formData.CategoryId
-                        )?.CategoryId?.Categoryname || "Select Sub-category"}
-                      </div>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {loading ? (
-                    <span className="loader2"></span>
-                  ) : categories?.length > 0 ? (
-                    categories?.map((location) => (
-                      <SelectItem key={location._id} value={location._id}>
-                        {location?.CategoryId?.Categoryname}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <div className="p-1 text-center text-sm">
-                      No Category available
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
-            </div> */}
+            
             <div>
               <label className="block w-full text-sm font-medium text-gray-700 mb-2">
                 Category
@@ -944,132 +832,7 @@ export default function Component() {
 
           {/* Available Sizes and Colors */}
           <div className="grid grid-cols-1 gap-8 mb-6">
-            {/* Available Sizes */}
-            {/* <div>
-              <h4 className="font-semibold mb-3">Available Sizes:</h4>
-              <div className="space-y-2 mb-3">
-                {defaultSizes.map((size) => (
-                  <div key={size} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id={size.toLowerCase().replace(" ", "-")}
-                        checked={formData.sizes.includes(size)}
-                        onCheckedChange={(checked) =>
-                          handleSizeToggle(size, checked)
-                        }
-                      />
-                      <label
-                        htmlFor={size.toLowerCase().replace(" ", "-")}
-                        className="text-sm"
-                      >
-                        {size} ({getSizeAbbreviation(size)})
-                      </label>
-                    </div>
-                  </div>
-                ))}
-
-                {formData.sizes
-                  .filter((size) => !defaultSizes.includes(size))
-                  .map((size) => (
-                    <div
-                      key={size}
-                      className="flex items-center justify-between bg-blue-50 px-2 py-1 rounded"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`custom-${size}`}
-                          checked={true}
-                          onCheckedChange={(checked) => {
-                            if (!checked) handleRemoveSize(size);
-                          }}
-                        />
-                        <label
-                          htmlFor={`custom-${size}`}
-                          className="text-sm font-medium text-blue-700"
-                        >
-                          {size} (Custom)
-                        </label>
-                      </div>
-                      <button
-                        onClick={() => handleRemoveSize(size)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                        type="button"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-              </div>
-
-              {showSizePicker ? (
-                <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
-                  <Input
-                    type="text"
-                    value={newSize}
-                    onChange={(e) => setNewSize(e.target.value)}
-                    placeholder="Enter custom size (e.g., XXXL, 2XL, etc.)"
-                    className="text-sm"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddSize();
-                      }
-                    }}
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      onClick={handleAddSize}
-                      size="sm"
-                      className="bg-[#106C83] hover:bg-[#0d5a6e] text-white"
-                      disabled={!newSize.trim()}
-                    >
-                      Add Size
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setShowSizePicker(false);
-                        setNewSize("");
-                      }}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-xs text-gray-600">Quick Sizes:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {["XXXL", "2XL", "3XL", "4XL", "5XL", "XS", "XXS"].map(
-                        (size) => (
-                          <button
-                            key={size}
-                            type="button"
-                            onClick={() => setNewSize(size)}
-                            className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50"
-                            disabled={formData.sizes.includes(size)}
-                          >
-                            {size}
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={() => setShowSizePicker(true)}
-                  variant="outline"
-                  className="w-full text-[#106C83] border-[#106C83] hover:bg-[#106C83] hover:text-white"
-                >
-                  + Manual Size
-                </Button>
-              )}
-            </div> */}
-
+          
             {/* Available Colors */}
             <div>
               <h4 className="font-semibold mb-3">Available Colors:</h4>
@@ -1204,29 +967,19 @@ export default function Component() {
                 />
               </div>
             </div>
-            {/* <p className="text-xs text-gray-500 mt-2">
-              Discount is automatically calculated based on Your Price and
-              Selling Price
-            </p> */}
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-4">
             <Button
-              onClick={handleAddProduct}
+              onClick={handleUpdateProduct}
               disabled={isLoading}
               className="flex-1 bg-[#106C83] hover:bg-[#0d5a6e] cursor-pointer text-white"
             >
-              {isLoading ? <span className="loader"></span> : "Add Product"}
+              {isLoading ? <span className="loader"></span> : "Update Product"}
             </Button>
-            {/* <Button
-              onClick={handleAddBulkProduct}
-              className="flex-1 bg-[#106C83] hover:bg-[#0d5a6e] cursor-pointer text-white"
-            >
-              Add Bulk Product
-            </Button> */}
             <Button
-              onClick={handleCancel}
+              onClick={()=>router.back()}
               variant="outline"
               className="flex-1 text-red-600 border-red-600 hover:bg-red-50"
             >

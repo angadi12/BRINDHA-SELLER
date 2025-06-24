@@ -29,10 +29,13 @@ export function middleware(request) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
+  // Check for dynamic route protection for Viewdetails
+  const isProductViewDetailsRoute = pathname.startsWith("/Product-management/Viewdetails/");
+
   const isNotVerifiedPage = pathname === notVerifiedRoute;
 
   // 🔐 If not logged in, block access to protected + notverified routes
-  if ((isProtected || isNotVerifiedPage) && !token) {
+  if ((isProtected || isNotVerifiedPage || isProductViewDetailsRoute) && !token) {
     return NextResponse.redirect(new URL("/Signin", request.url));
   }
 
@@ -67,5 +70,6 @@ export const config = {
     "/messages",
     "/customer-service",
     "/notverified",
+    "/Product-management/Viewdetails/:id", // Add dynamic route matcher
   ],
 };
