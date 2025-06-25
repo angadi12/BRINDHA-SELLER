@@ -31,11 +31,12 @@ import { Uploadfiles } from "@/lib/API/fileupload/multiplefile";
 import { useToast } from "@/components/ui/toast-provider";
 import { getVerificationStatusThunk } from "@/lib/Redux/Slices/vendorSlice";
 import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export default function CompanyRegistrationDialog() {
   const { addToast } = useToast();
   const dispatch = useDispatch();
-
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -92,36 +93,9 @@ export default function CompanyRegistrationDialog() {
     }));
   };
 
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault();
-
-  //     try {
-  //       const filesToUpload = Object.values(formData.Documents).filter(Boolean);
-  //       const uploadRes = await Uploadfiles(filesToUpload);
-  //       const uploadedUrls = uploadRes.data;
-
-  //       const docKeys = Object.keys(formData.Documents);
-  //       const documents = {};
-  //       docKeys.forEach((key, index) => {
-  //         documents[key] = uploadedUrls[index];
-  //       });
-
-  //       const payload = {
-  //         ...formData,
-  //         Documents: documents,
-  //       };
-
-  //       const result = await Sendverification(payload);
-  //       console.log("Verification submitted:", result);
-  //     } catch (err) {
-  //       console.error("Submission failed:", err);
-  //     }
-  //   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Step 1: Validation
     const {
       BussinessName,
       BussinessEmail,
@@ -175,7 +149,6 @@ export default function CompanyRegistrationDialog() {
       });
     }
 
-    // ✅ Step 2: Uploading & Submission
     setLoading(true);
     try {
       const uploadRes = await Uploadfiles(docFiles);
@@ -206,8 +179,8 @@ export default function CompanyRegistrationDialog() {
           duration: 5000,
         });
         dispatch(getVerificationStatusThunk());
-        
-        // Optionally reset form here
+        setOpen(false);
+        router.refresh();
       } else {
         throw new Error(result?.message || "Verification failed");
       }
@@ -250,8 +223,6 @@ export default function CompanyRegistrationDialog() {
       </div>
     </div>
   );
-
-  console.log(formData);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -564,7 +535,12 @@ export default function CompanyRegistrationDialog() {
               >
                 Cancel
               </Button>
-              <Button className="w-60 bg-[#106C83] text-white rounded-md" type="submit">{loading?<span className="loader"></span>:"Submit"}</Button>
+              <Button
+                className="w-60 bg-[#106C83] text-white rounded-md"
+                type="submit"
+              >
+                {loading ? <span className="loader"></span> : "Submit"}
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>

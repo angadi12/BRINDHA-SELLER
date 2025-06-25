@@ -115,8 +115,8 @@ const Sidenav = () => {
       <div className="flex w-full mt-3 px-2 flex-col flex-1">
         <div className="py-2">
           {!isMinimized && (
-            <p className="px-4 text-xs font-medium text-gray-500 mb-1 transition-all duration-900 ease-in-out">
-              Dashboard
+            <p className="px-4 text-xs mb-2 font-medium text-gray-500 mb-1 transition-all duration-900 ease-in-out">
+              Menu
             </p>
           )}
           <div

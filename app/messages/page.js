@@ -18,29 +18,20 @@ import User from "@/public/Asset/User.png";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllTickets } from "@/lib/Redux/Slices/ticketSlice";
+import { Sendmessage } from "@/lib/API/Messages/Messages";
 
 export default function MessagingInterface() {
   const { tickets, loading, error } = useSelector((state) => state.tickets);
   const dispatch = useDispatch();
   const scrollRef = useRef(null);
 
-  useEffect(() => {
-    dispatch(fetchAllTickets(""));
-  }, [dispatch]);
-
   const [selectedContact, setSelectedContact] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-  const [activeTab, setActiveTab] = useState("customers");
-
-  // const handleSendMessage = () => {
-  //   if (!newMessage.trim()) return;
-
-  //   // In a real app, you would send this to an API
-  //   console.log("Sending message:", newMessage);
-
-  //   // Clear the input
-  //   setNewMessage("");
-  // };
+  const [activeTab, setActiveTab] = useState("User");
+  const [sending, Setsending] = useState(false);
+  useEffect(() => {
+    dispatch(fetchAllTickets(activeTab));
+  }, [dispatch, activeTab]);
 
   const contacts = tickets?.map((ticket) => ({
     id: ticket._id,
@@ -54,7 +45,7 @@ export default function MessagingInterface() {
     messages: ticket.Message.map((msg) => ({
       id: msg._id,
       content: msg.msg,
-      sender: msg.user === "your_current_user_id" ? "user" : "agent", // Replace accordingly
+      sender: msg.user === "6800afc07f7c2467f521e9f5" ? "user" : "agent", // Replace accordingly
       timestamp: msg.date,
     })),
   }));
@@ -65,25 +56,59 @@ export default function MessagingInterface() {
     }
   }, [contacts]);
 
-  const handleSendMessage = () => {
+ 
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const newMsg = {
-      id: Date.now().toString(),
-      content: newMessage,
-      role: "agent",
-      timestamp: new Date().toLocaleTimeString(),
+    const messageData = {
+      msg: newMessage,
+      date: new Date().toLocaleDateString(),
+      user: "6800afc07f7c2467f521e9f5",
     };
+    Setsending(true);
+    try {
+      const response = await Sendmessage(selectedContact.id, {
+        Message: messageData,
+      });
 
-    setSelectedContact((prev) => ({
-      ...prev,
-      messages: [...prev.messages, newMsg],
-    }));
+      if (response?.success) {
+        // If the API call is successful, update the selected contact with the new message
+        setSelectedContact((prev) => ({
+          ...prev,
+          messages: [
+            ...prev.messages,
+            {
+              id: Date.now().toString(),
+              content: newMessage,
+              sender: "user",
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ],
+        }));
 
-    setNewMessage("");
+        setNewMessage(""); // Clear the input field after sending the message
+        Setsending(false);
+        dispatch(fetchAllTickets(activeTab));
+      } else {
+        Setsending(false);
+        addToast({
+          title: `Failed to send message`,
+          description: response?.message,
+          variant: "destructive",
+          duration: 5000,
+        });
+      }
+    } catch (error) {
+      Setsending(false);
+      addToast({
+        title: `Failed to send message`,
+        description: error,
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   };
 
-  console.log(contacts);
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -92,81 +117,90 @@ export default function MessagingInterface() {
 
   return (
     <ScrollArea className=" mx-auto p-4 w-full h-screen pb-14 mb-8">
-     
+    
+
       {/* Messaging Interface */}
       <Card className="overflow-hidden shadow-none rounded-md mb-4 p-0 w-full">
         <div className="flex flex-col h-[500px]">
           {/* Messages Header */}
           <div className="flex justify-between items-center p-2 border-b ">
             <h2 className="text-xl font-semibold">Messages</h2>
-            <Button variant="outline">
-              Today <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
           </div>
 
           <div className="flex h-full w-full">
             {/* Left Sidebar */}
-            <div className="w-1/3 border-r flex flex-col h-full ">
+            <div className="w-1/3 border-r flex flex-col h-full">
               {/* Tabs */}
-              <Tabs defaultValue="customers" className="w-full">
-                <TabsList className="grid grid-cols-1 h-auto p-0 w-full">
+              <Tabs defaultValue="User" className="w-full">
+                <TabsList className="grid grid-cols-1 gap-1 h-auto p-0 w-full border">
                   <TabsTrigger
-                    value="customers"
-                    onClick={() => setActiveTab("customers")}
-                    className={`rounded-none py-2 cursor-pointer ${
-                      activeTab === "customers"
-                        ? " text-[#106C83] focus:bg-[#106C83]"
-                        : "bg-white text-black"
+                    value="User"
+                    onClick={() => setActiveTab("User")}
+                    className={`rounded-none py-2 cursor-pointer border ${
+                      activeTab === "User"
+                        ? " text-[#106C83] focus:bg-[#106C83]  ring-1 ring-[#106C83]"
+                        : "bg-white text-black "
                     }`}
                   >
                     Brindha
                   </TabsTrigger>
                  
-                
                 </TabsList>
               </Tabs>
 
               {/* Contact List */}
-              <ScrollArea className="flex-grow overflow-y-auto pb-12">
-                {contacts?.map((contact) => (
-                  <div
-                    key={contact?.id}
-                    className={`flex items-center p-4 cursor-pointer ${
-                      selectedContact?.id === contact?.id
-                        ? "bg-[#106C83] text-white"
-                        : ""
-                    }`}
-                    onClick={() => setSelectedContact(contact)}
-                  >
-                    <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
-                      {/* <Image
-                        src={User}
-                        alt={contact.name}
-                        width={48}
-                        height={48}
-                        className="object-cover"
-                      /> */}
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex justify-between">
-                        <h3 className="font-medium">{contact?.name}</h3>
-                        <span className="text-xs">
-                          {contact?.lastMessageTime}
-                        </span>
-                      </div>
-                      <p
-                        className={`text-sm truncate ${
+              {loading ? (
+                <div className="flex justify-center items-center h-full">
+                  <span className="loader2"></span>
+                </div>
+              ) : (
+                <ScrollArea className="flex-grow overflow-y-auto pb-12">
+                  {contacts?.length > 0 ? (
+                    contacts?.map((contact) => (
+                      <div
+                        key={contact?.id}
+                        className={`flex items-center p-4 cursor-pointer ${
                           selectedContact?.id === contact?.id
-                            ? "text-white/80"
-                            : "text-gray-500"
+                            ? "bg-[#106C83] text-white"
+                            : ""
                         }`}
+                        onClick={() => setSelectedContact(contact)}
                       >
-                        {contact?.lastMessage}
-                      </p>
+                        <div className="w-12 h-12 rounded-sm bg-white overflow-hidden mr-3">
+                          <Image
+                            src={messages}
+                            alt={contact.name}
+                            width={48}
+                            height={48}
+                            className="object-cover opacity-40"
+                          />
+                        </div>
+                        <div className="flex-grow">
+                          <div className="flex justify-between">
+                            <h3 className="font-medium">{contact?.name}</h3>
+                            <span className="text-xs">
+                              {contact?.lastMessageTime}
+                            </span>
+                          </div>
+                          <p
+                            className={`text-sm truncate ${
+                              selectedContact?.id === contact?.id
+                                ? "text-white/80"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {contact?.lastMessage}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex justify-center items-center mt-12">
+                      <span>No Messages</span>
                     </div>
-                  </div>
-                ))}
-              </ScrollArea>
+                  )}
+                </ScrollArea>
+              )}
             </div>
 
             {/* Right Chat Area */}
@@ -174,13 +208,13 @@ export default function MessagingInterface() {
               {/* Chat Header */}
               <div className="p-4 border-b flex items-center">
                 <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
-                  {/* <Image
-                    src={User}
+                  <Image
+                    src={messages}
                     alt={selectedContact?.name}
                     width={40}
                     height={40}
                     className="object-cover"
-                  /> */}
+                  />
                 </div>
                 <div>
                   <h3 className="font-medium">{selectedContact?.name}</h3>
@@ -284,7 +318,7 @@ export default function MessagingInterface() {
                   className="ml-2 bg-[#106C83] hover:bg-teal-700"
                   onClick={handleSendMessage}
                 >
-                  <Send className="h-4 w-4" />
+                 {sending?<span className="loader"></span>: <Send className="h-4 w-4" />}
                 </Button>
               </div>
             </div>
