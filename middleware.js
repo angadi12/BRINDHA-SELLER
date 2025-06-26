@@ -20,7 +20,7 @@ export function middleware(request) {
   const token = request.cookies.get("token")?.value;
   const isVerified = request.cookies.get("isCompanyVerified")?.value;
 
-  const unverifiedStatuses = ["Pending", "Requestsend"];
+  const unverifiedStatuses = ["Pending", "Requestsend","Reverify","Rejected"];
 
   const isProtected = protectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)

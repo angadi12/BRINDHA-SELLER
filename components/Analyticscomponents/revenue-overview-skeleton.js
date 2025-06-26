@@ -8,7 +8,6 @@ export default function Revenueskeleton() {
   );
 
  
-console.log(loadingEarning)
 
 
   return (

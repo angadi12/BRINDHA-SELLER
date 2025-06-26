@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, FileText, Building2 } from "lucide-react";
+import { Upload, FileText, Building2, Delete } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Sendverification } from "@/lib/API/Auth/Auth";
 import { Uploadfiles } from "@/lib/API/fileupload/multiplefile";
@@ -201,28 +201,50 @@ export default function CompanyRegistrationDialog() {
     label,
     documentType,
     accept = ".pdf,.jpg,.jpeg,.png",
-  }) => (
-    <div className="space-y-2">
-      <Label htmlFor={documentType}>{label}</Label>
-      <div className="flex items-center gap-2">
-        <Input
-          id={documentType}
-          type="file"
-          accept={accept}
-          onChange={(e) =>
-            handleFileUpload(documentType, e.target.files?.[0] || null)
-          }
-          className="file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#106C83] file:text-white hover:file:bg-[#0D5669]"
-        />
-        {formData.Documents[documentType] && (
-          <div className="flex items-center gap-1 text-sm text-green-600">
-            <FileText className="h-4 w-4" />
-            {formData.Documents[documentType]?.name}
-          </div>
-        )}
+  }) => {
+    const handleRemoveFile = () => {
+      setFormData((prev) => ({
+        ...prev,
+        Documents: {
+          ...prev.Documents,
+          [documentType]: null, // Remove the file
+        },
+      }));
+    };
+
+    return (
+      <div className="space-y-2">
+        <Label htmlFor={documentType}>{label}</Label>
+        <div className="flex items-center gap-2">
+          {formData.Documents[documentType] ? (
+            <div className="flex items-center justify-between w-full gap-1 text-sm text-green-600">
+              <div className="flex justify-center items-center gap-2">
+                <FileText className="h-4 w-4" />
+                {formData.Documents[documentType]?.name}
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveFile}
+                className="text-red-500 hover:text-red-700 ml-2 cursor-pointer"
+              >
+                <Delete />
+              </button>
+            </div>
+          ) : (
+            <Input
+              id={documentType}
+              type="file"
+              accept={accept}
+              onChange={(e) =>
+                handleFileUpload(documentType, e.target.files?.[0] || null)
+              }
+              className="file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#106C83] file:text-white hover:file:bg-[#0D5669]"
+            />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -251,7 +273,9 @@ export default function CompanyRegistrationDialog() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="businessName">Business Name *</Label>
+                  <Label htmlFor="businessName">
+                    Business Name <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="businessName"
                     value={formData.BussinessName}
@@ -263,7 +287,9 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="businessEmail">Business Email *</Label>
+                  <Label htmlFor="businessEmail">
+                    Business Email <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="businessEmail"
                     type="email"
@@ -276,13 +302,29 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="businessNumber">Business Phone *</Label>
+                  <Label htmlFor="businessNumber">
+                    Business Phone <span className="text-red-500">*</span>
+                  </Label>
                   <Input
+                    type="Number"
                     id="businessNumber"
-                    value={formData.BussinessNumber}
                     onChange={(e) =>
                       handleInputChange("BussinessNumber", e.target.value)
                     }
+                    onBlur={() => {
+                      if (
+                        formData.BussinessNumber &&
+                        formData.BussinessNumber.length !== 10
+                      ) {
+                        addToast({
+                          title: "Invalid Phone Number",
+                          description:
+                            "Phone number should be exactly 10 digits.",
+                          variant: "destructive",
+                          duration: 1000,
+                        });
+                      }
+                    }}
                     placeholder="Enter phone number"
                     required
                   />
@@ -299,7 +341,9 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="businessType">Business Type *</Label>
+                  <Label htmlFor="businessType">
+                    Business Type <span className="text-red-500">*</span>
+                  </Label>
                   <Select
                     value={formData.Bussinesstype}
                     onValueChange={(value) =>
@@ -329,7 +373,9 @@ export default function CompanyRegistrationDialog() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="gstNumber">GST Number *</Label>
+                  <Label htmlFor="gstNumber">
+                    GST Number <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="gstNumber"
                     value={formData.GstNumber}
@@ -341,7 +387,9 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="panNumber">PAN Number *</Label>
+                  <Label htmlFor="panNumber">
+                    PAN Number <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="panNumber"
                     value={formData.PanNumber}
@@ -363,7 +411,7 @@ export default function CompanyRegistrationDialog() {
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="accountHolderName">
-                    Account Holder Name *
+                    Account Holder Name <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="accountHolderName"
@@ -379,7 +427,9 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="bankName">Bank Name *</Label>
+                  <Label htmlFor="bankName">
+                    Bank Name <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="bankName"
                     value={formData.Bankdetails.BankName}
@@ -391,8 +441,11 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="accountNumber">Account Number *</Label>
+                  <Label htmlFor="accountNumber">
+                    Account Number <span className="text-red-500">*</span>
+                  </Label>
                   <Input
+                    type="Number"
                     id="accountNumber"
                     value={formData.Bankdetails.Accountnumber}
                     onChange={(e) =>
@@ -406,7 +459,9 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ifscCode">IFSC Code *</Label>
+                  <Label htmlFor="ifscCode">
+                    IFSC Code <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="ifscCode"
                     value={formData.Bankdetails.Ifsc}
@@ -427,7 +482,9 @@ export default function CompanyRegistrationDialog() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="country">Country *</Label>
+                  <Label htmlFor="country">
+                    Country <span className="text-red-500">*</span>
+                  </Label>
                   <Select
                     value={formData.Address.Country}
                     onValueChange={(value) =>
@@ -445,7 +502,9 @@ export default function CompanyRegistrationDialog() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="state">State *</Label>
+                  <Label htmlFor="state">
+                    State <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="state"
                     value={formData.Address.State}
@@ -457,7 +516,9 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="city">City *</Label>
+                  <Label htmlFor="city">
+                    City <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="city"
                     value={formData.Address.City}
@@ -469,7 +530,9 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="place">Area/Place *</Label>
+                  <Label htmlFor="place">
+                    Area/Place <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="place"
                     value={formData.Address.Place}
@@ -481,8 +544,11 @@ export default function CompanyRegistrationDialog() {
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="pincode">Pincode *</Label>
+                  <Label htmlFor="pincode">
+                    Pincode <span className="text-red-500">*</span>
+                  </Label>
                   <Input
+                    type={"Number"}
                     id="pincode"
                     value={formData.Address.Pincode}
                     onChange={(e) =>
@@ -505,22 +571,22 @@ export default function CompanyRegistrationDialog() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FileUploadField
-                  label="Address Proof *"
+                  label="Address Proof "
                   documentType="AddressProof"
                   accept=".pdf,.jpg,.jpeg,.png"
                 />
                 <FileUploadField
-                  label="Aadhar Card *"
+                  label="Aadhar Card "
                   documentType="AadharCard"
                   accept=".jpg,.jpeg,.png,.pdf"
                 />
                 <FileUploadField
-                  label="PAN Card *"
+                  label="PAN Card "
                   documentType="Pincard"
                   accept=".jpg,.jpeg,.png,.pdf"
                 />
                 <FileUploadField
-                  label="Bank Passbook *"
+                  label="Bank Passbook "
                   documentType="BankPassbook"
                   accept=".jpg,.jpeg,.png,.pdf"
                 />

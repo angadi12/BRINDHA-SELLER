@@ -9,6 +9,8 @@ import {
   Clock,
   X,
   FileText,
+  Cross,
+  OctagonX,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -356,6 +358,384 @@ export default function NotVerifiedPage() {
                     <Clock className="h-4 w-4" />
                     Review in Progress
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Documents Status */}
+              {/* <Card className="max-w-2xl mx-auto mb-8">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Submitted Documents
+                  </h3>
+                  <div className="space-y-3">
+                    {submittedDocuments.map((doc, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {doc.name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {doc.fileName}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-sm text-green-700 bg-green-100 px-2 py-1 rounded-full">
+                          Submitted
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card> */}
+
+              {/* What's Next Information */}
+              {/* <Card className="max-w-2xl mx-auto">
+                <CardContent className="p-6">
+                  <h3 className="font-medium text-gray-900 mb-3">
+                    What happens next?
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-[#106C83] text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5">
+                        1
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          Document Review
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Our team verifies all submitted documents
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-medium mt-0.5">
+                        2
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">
+                          Verification Complete
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          You'll receive an email notification with the results
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-medium mt-0.5">
+                        3
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">
+                          Account Activation
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Full access to all platform features upon approval
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card> */}
+
+              {/* Contact Support */}
+              <div className="max-w-2xl mx-auto mt-8 text-center">
+                <p className="text-gray-600 text-sm">
+                  Need help? Contact our support team at{" "}
+                  <a
+                    href="mailto:support@easypg.com"
+                    className="text-[#106C83] hover:underline"
+                  >
+                    support@easypg.com
+                  </a>
+                </p>
+              </div>
+            </main>
+          )}
+          {status?.isCompanyVerified === "Reverify" && (
+            <main className="max-w-5xl mx-auto space-y-6 border p-8 rounded-2xl bg-white ">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Account Verification
+                </h1>
+                <Dialog
+                  open={isLogoutDialogOpen}
+                  onOpenChange={setIsLogoutDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2 border-[#106C83] text-[#106C83] hover:bg-[#106C83] hover:text-white"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-center">
+                        Confirm Logout
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <p className="text-center text-gray-600">
+                        Are you sure you want to logout? You will need to sign
+                        in again to access your account.
+                      </p>
+                    </div>
+                    <div className="flex gap-3 justify-end">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsLogoutDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={handleLogout}
+                        className="flex items-center gap-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              {/* Alert Banner */}
+              <Alert className="mb-8 border-orange-200 bg-orange-50">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <div>
+                  <h3 className="font-medium text-orange-800 mb-1">
+                    Verification In Progress
+                  </h3>
+                  <AlertDescription className="text-orange-700">
+                    Your verification documents have been submitted
+                    successfully. Our team is currently reviewing your
+                    application. This process may take up to 48 hours to
+                    complete.
+                  </AlertDescription>
+                </div>
+              </Alert>
+
+              {/* Main Status Card */}
+              <Card className="bg-white rounded-lg border p-2 flex justify-center items-center flex-col gap-4">
+                <CardContent className="flex flex-col items-center justify-center py-4 px-8 text-center">
+                  {/* Clock Icon */}
+                  <div className="w-16 h-16 bg-[#106C83]/10 rounded-full flex items-center justify-center mb-6">
+                    <Clock className="h-8 w-8 text-[#106C83]" />
+                  </div>
+
+                  {/* Heading */}
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                    Verification Requested
+                  </h2>
+
+                  {/* Description */}
+                  <p className="text-gray-600 mb-6 max-w-md">
+                    Your documents have been submitted and are currently under
+                    review by our verification team.
+                  </p>
+
+                  {/* Status Badge */}
+                  <div className="inline-flex items-center gap-2 bg-[#106C83]/10 text-[#106C83] px-4 py-2 rounded-full text-sm font-medium mb-6">
+                    <Clock className="h-4 w-4" />
+                    Review in Progress
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Documents Status */}
+              {/* <Card className="max-w-2xl mx-auto mb-8">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Submitted Documents
+                  </h3>
+                  <div className="space-y-3">
+                    {submittedDocuments.map((doc, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {doc.name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {doc.fileName}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-sm text-green-700 bg-green-100 px-2 py-1 rounded-full">
+                          Submitted
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card> */}
+
+              {/* What's Next Information */}
+              {/* <Card className="max-w-2xl mx-auto">
+                <CardContent className="p-6">
+                  <h3 className="font-medium text-gray-900 mb-3">
+                    What happens next?
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-[#106C83] text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5">
+                        1
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          Document Review
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Our team verifies all submitted documents
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-medium mt-0.5">
+                        2
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">
+                          Verification Complete
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          You'll receive an email notification with the results
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-medium mt-0.5">
+                        3
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">
+                          Account Activation
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Full access to all platform features upon approval
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card> */}
+
+              {/* Contact Support */}
+              <div className="max-w-2xl mx-auto mt-8 text-center">
+                <p className="text-gray-600 text-sm">
+                  Need help? Contact our support team at{" "}
+                  <a
+                    href="mailto:support@easypg.com"
+                    className="text-[#106C83] hover:underline"
+                  >
+                    support@easypg.com
+                  </a>
+                </p>
+              </div>
+            </main>
+          )}
+          {status?.isCompanyVerified === "Rejected" && (
+            <main className="max-w-5xl mx-auto space-y-6 border p-8 rounded-2xl bg-white ">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Account Verification
+                </h1>
+                <Dialog
+                  open={isLogoutDialogOpen}
+                  onOpenChange={setIsLogoutDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2 border-[#106C83] text-[#106C83] hover:bg-[#106C83] hover:text-white"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-center">
+                        Confirm Logout
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <p className="text-center text-gray-600">
+                        Are you sure you want to logout? You will need to sign
+                        in again to access your account.
+                      </p>
+                    </div>
+                    <div className="flex gap-3 justify-end">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsLogoutDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={handleLogout}
+                        className="flex items-center gap-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              {/* Alert Banner */}
+              <Alert className="mb-8 border-red-200 bg-red-50">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <div>
+                  <h3 className="font-medium text-orange-800 mb-1">
+                    Verification Rejected
+                  </h3>
+                  <AlertDescription className="text-orange-700">
+                    Your verification documents have been Rejected.
+                    
+                  </AlertDescription>
+                </div>
+              </Alert>
+
+              {/* Main Status Card */}
+              <Card className="bg-white rounded-lg border p-2 flex justify-center items-center flex-col gap-4">
+                <CardContent className="flex flex-col items-center justify-center py-4 px-8 text-center">
+                  {/* Clock Icon */}
+                  <div className="w-16 h-16 bg-red-600/10 rounded-full flex items-center justify-center mb-6">
+                    <OctagonX className="h-8 w-8 text-red-700" />
+                  </div>
+
+                  {/* Heading */}
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                    Verification Rejected
+                  </h2>
+
+                  {/* Description */}
+                  <p className="text-gray-600 mb-6 max-w-md">
+                    Your documents have been submitted and are Rejected
+                     by our verification team.
+                  </p>
+
+                  {/* Status Badge */}
+                  {/* <div className="inline-flex items-center gap-2 bg-[#106C83]/10 text-[#106C83] px-4 py-2 rounded-full text-sm font-medium mb-6">
+                    <Clock className="h-4 w-4" />
+                    Review in Progress
+                  </div> */}
                 </CardContent>
               </Card>
 
