@@ -35,7 +35,10 @@ import {
 } from "@/components/ui/pagination";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { FetchAllpaidpayout, FetchAllpendingpayout } from "@/lib/Redux/Slices/revenueSlice";
+import {
+  FetchAllpaidpayout,
+  FetchAllpendingpayout,
+} from "@/lib/Redux/Slices/revenueSlice";
 
 export default function Earningtable() {
   const [selectedValue, setSelectedValue] = useState("this-week");
@@ -56,10 +59,11 @@ export default function Earningtable() {
   );
   const dispatch = useDispatch();
 
-
   useEffect(() => {
-    if(profileTab==="all") dispatch(FetchAllpaidpayout({page:1,limit:10}));
-    if(profileTab==="pending") dispatch(FetchAllpendingpayout({page:1,limit:10}));
+    if (profileTab === "all")
+      dispatch(FetchAllpaidpayout({ page: 1, limit: 10 }));
+    if (profileTab === "pending")
+      dispatch(FetchAllpendingpayout({ page: 1, limit: 10 }));
   }, [dispatch, profileTab]);
 
   const handleSelectChange = (value) => {
@@ -205,230 +209,213 @@ export default function Earningtable() {
           </div>
 
           {/* Table */}
-        { profileTab==="all" && <div className=" rounded-md">
-            {paidpayoutloading ? (
-              <div className="flex items-center justify-center py-10 text-gray-500">
-                <span className="loader2 " />
-              </div>
-            ) : paidpayouterror ? (
-              <div className="flex items-center justify-center py-10 text-red-500">
-                {paidpayouterror}
-              </div>
-            ) : paidpayout?.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No data available
-              </div>
-            ) : (
-              <Table>
-                <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
-                  <TableRow className="">
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      BUSINESS NAME
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      LOCATION
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      OWNER NAME
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      EMAIL ID
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      CONTACT
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      REGISTRATION DATE
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      STATUS
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      ACTION
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paidpayout?.map((application, index) => (
-                    <TableRow
-                      key={index}
-                      className="border-b border-gray-200 h-12"
-                    >
-                      <TableCell className="font-medium">
-                        {application?.BussinessName}
-                      </TableCell>
-                      <TableCell>
-                        {application?.CompanyId?.Address?.City}
-                      </TableCell>
-                      <TableCell>{application?.Vendorname}</TableCell>
-                      <TableCell>{application.Email}</TableCell>
-                      <TableCell>{application?.Number}</TableCell>
-                      <TableCell>
-                        {new Date(application?.createdAt)?.toLocaleDateString(
-                          "en-GB"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={`font-medium ${
-                            application.isCompanyVerified === "Pending"
-                              ? "text-amber-500"
-                              : application.isCompanyVerified === "Approved"
-                              ? "text-green-500 border-green-200 bg-green-50"
-                              : application.isCompanyVerified === "Rejected"
-                              ? "text-red-500"
-                              : "text-gray-500"
-                          }`}
-                        >
-                          {application.isCompanyVerified}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {application.isCompanyVerified === "Approved" ? (
-                          <span
-                            onClick={() =>
-                              router.push(
-                                `/product-seller/profile/${application?._id}`
-                              )
-                            }
-                            className="text-[#106C83] cursor-pointer hover:underline font-medium"
+          {profileTab === "all" && (
+            <div className=" rounded-md">
+              {paidpayoutloading ? (
+                <div className="flex items-center justify-center py-10 text-gray-500">
+                  <span className="loader2 " />
+                </div>
+              ) : paidpayouterror ? (
+                <div className="flex items-center justify-center py-10 text-red-500">
+                  {paidpayouterror}
+                </div>
+              ) : paidpayout?.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No data available
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
+                    <TableRow className="">
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        BUSINESS NAME
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        LOCATION
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        OWNER NAME
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        EMAIL ID
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        CONTACT
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        REGISTRATION DATE
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        STATUS
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        ACTION
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paidpayout?.map((application, index) => (
+                      <TableRow
+                        key={index}
+                        className="border-b border-gray-200 h-12"
+                      >
+                        <TableCell className="font-medium">
+                          {application?.BussinessName}
+                        </TableCell>
+                        <TableCell>
+                          {application?.CompanyId?.Address?.City}
+                        </TableCell>
+                        <TableCell>{application?.Vendorname}</TableCell>
+                        <TableCell>{application.Email}</TableCell>
+                        <TableCell>{application?.Number}</TableCell>
+                        <TableCell>
+                          {new Date(application?.createdAt)?.toLocaleDateString(
+                            "en-GB"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`font-medium ${
+                              application.isCompanyVerified === "Pending"
+                                ? "text-amber-500"
+                                : application.isCompanyVerified === "Approved"
+                                ? "text-green-500 border-green-200 bg-green-50"
+                                : application.isCompanyVerified === "Rejected"
+                                ? "text-red-500"
+                                : "text-gray-500"
+                            }`}
                           >
-                            View Profile
-                          </span>
-                        ) : (
+                            {application.isCompanyVerified}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {application.isCompanyVerified === "Approved" ? (
+                            <span
+                              onClick={() =>
+                                router.push(
+                                  `/product-seller/profile/${application?._id}`
+                                )
+                              }
+                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
+                            >
+                              View Profile
+                            </span>
+                          ) : (
+                            <span
+                              onClick={() =>
+                                router.push(
+                                  `/product-seller/profiledoc/${application?._id}`
+                                )
+                              }
+                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
+                            >
+                              View Details
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
+          )}
+
+          {profileTab === "pending" && (
+            <div className=" rounded-md">
+              {pendingpayoutloading ? (
+                <div className="flex items-center justify-center py-10 text-gray-500">
+                  <span className="loader2 " />
+                </div>
+              ) : pendingpayouterror ? (
+                <div className="flex items-center justify-center py-10 text-red-500">
+                  {pendingpayouterror}
+                </div>
+              ) : pendingpayout?.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No data available
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
+                    <TableRow className="">
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        BUSINESS NAME
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        LOCATION
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        OWNER NAME
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        EMAIL ID
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        CONTACT
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        REGISTRATION DATE
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        STATUS
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500">
+                        ACTION
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paidpayout?.map((application, index) => (
+                      <TableRow
+                        key={index}
+                        className="border-b border-gray-200 h-12"
+                      >
+                        <TableCell className="font-medium">
+                          {application?.BussinessName}
+                        </TableCell>
+                        <TableCell>
+                          {application?.CompanyId?.Address?.City}
+                        </TableCell>
+                        <TableCell>{application?.Vendorname}</TableCell>
+                        <TableCell>{application.Email}</TableCell>
+                        <TableCell>{application?.Number}</TableCell>
+                        <TableCell>
+                          {new Date(application?.createdAt)?.toLocaleDateString(
+                            "en-GB"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`font-medium ${
+                              application?.PayoutStatus === "Pending"
+                                ? "text-amber-500"
+                                : application?.PayoutStatus === "Approved"
+                                ? "text-green-500 border-green-200 bg-green-50"
+                                : application?.PayoutStatus === "Rejected"
+                                ? "text-red-500"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {application?.PayoutStatus}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
                           <span
-                            onClick={() =>
-                              router.push(
-                                `/product-seller/profiledoc/${application?._id}`
-                              )
-                            }
+                            onClick={() => router.push(`/`)}
                             className="text-[#106C83] cursor-pointer hover:underline font-medium"
                           >
                             View Details
                           </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>}
-
-        { profileTab==="pending" && <div className=" rounded-md">
-            {pendingpayoutloading ? (
-              <div className="flex items-center justify-center py-10 text-gray-500">
-                <span className="loader2 " />
-              </div>
-            ) : pendingpayouterror ? (
-              <div className="flex items-center justify-center py-10 text-red-500">
-                {pendingpayouterror}
-              </div>
-            ) : pendingpayout?.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No data available
-              </div>
-            ) : (
-              <Table>
-                <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
-                  <TableRow className="">
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      BUSINESS NAME
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      LOCATION
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      OWNER NAME
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      EMAIL ID
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      CONTACT
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      REGISTRATION DATE
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      STATUS
-                    </TableHead>
-                    <TableHead className="text-xs font-medium text-gray-500">
-                      ACTION
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paidpayout?.map((application, index) => (
-                    <TableRow
-                      key={index}
-                      className="border-b border-gray-200 h-12"
-                    >
-                      <TableCell className="font-medium">
-                        {application?.BussinessName}
-                      </TableCell>
-                      <TableCell>
-                        {application?.CompanyId?.Address?.City}
-                      </TableCell>
-                      <TableCell>{application?.Vendorname}</TableCell>
-                      <TableCell>{application.Email}</TableCell>
-                      <TableCell>{application?.Number}</TableCell>
-                      <TableCell>
-                        {new Date(application?.createdAt)?.toLocaleDateString(
-                          "en-GB"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={`font-medium ${
-                            application.isCompanyVerified === "Pending"
-                              ? "text-amber-500"
-                              : application.isCompanyVerified === "Approved"
-                              ? "text-green-500 border-green-200 bg-green-50"
-                              : application.isCompanyVerified === "Rejected"
-                              ? "text-red-500"
-                              : "text-gray-500"
-                          }`}
-                        >
-                          {application.isCompanyVerified}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {application.isCompanyVerified === "Approved" ? (
-                          <span
-                            onClick={() =>
-                              router.push(
-                                `/product-seller/profile/${application?._id}`
-                              )
-                            }
-                            className="text-[#106C83] cursor-pointer hover:underline font-medium"
-                          >
-                            View Profile
-                          </span>
-                        ) : (
-                          <span
-                            onClick={() =>
-                              router.push(
-                                `/product-seller/profiledoc/${application?._id}`
-                              )
-                            }
-                            className="text-[#106C83] cursor-pointer hover:underline font-medium"
-                          >
-                            View Details
-                          </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>}
-
-      
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
+          )}
         </TabsContent>
-
-       
       </Tabs>
     </div>
   );

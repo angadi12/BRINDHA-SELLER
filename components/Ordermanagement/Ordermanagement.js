@@ -49,60 +49,15 @@ const Ordermanagement = () => {
     setSelectedValue(value);
   };
 
-  const activeSellers = [
-    {
-      businessName: "Business Name",
-      website: "www.businessname.com",
-      address: "This is for a sample address",
-      email: "businessname@gmail.com",
-      phone: "+91 9738687282",
-      alternatePhone: "+91 6783567389",
-      rating: 5.0,
-      reviews: 23,
-      totalProducts: 234,
-      revenue: 6876,
-      commission: 1876,
-    },
-    {
-      businessName: "Business Name",
-      website: "www.businessname.com",
-      address: "This is for a sample address",
-      email: "businessname@gmail.com",
-      phone: "+91 9738687282",
-      alternatePhone: "+91 6783567389",
-      rating: 5.0,
-      reviews: 23,
-      totalProducts: 234,
-      revenue: 6876,
-      commission: 1876,
-    },
-    {
-      businessName: "Business Name",
-      website: "www.businessname.com",
-      address: "This is for a sample address",
-      email: "businessname@gmail.com",
-      phone: "+91 9738687282",
-      alternatePhone: "+91 6783567389",
-      rating: 5.0,
-      reviews: 23,
-      totalProducts: 234,
-      revenue: 6876,
-      commission: 1876,
-    },
-    {
-      businessName: "Business Name",
-      website: "www.businessname.com",
-      address: "This is for a sample address",
-      email: "businessname@gmail.com",
-      phone: "+91 9738687282",
-      alternatePhone: "+91 6783567389",
-      rating: 5.0,
-      reviews: 23,
-      totalProducts: 234,
-      revenue: 6876,
-      commission: 1876,
-    },
-  ];
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <div className="w-full rounded-lg border h-full bg-white p-4">
@@ -164,84 +119,78 @@ const Ordermanagement = () => {
                 No data available
               </div>
             ) : (
-            <Table>
-              <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
-                <TableRow className="">
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    Order id.
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    date
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    customer name
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    EMAIL ID
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    location
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    Items
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    payment type
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    amount
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    status
-                  </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                    Actions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data?.map((application, index) => (
-                  <TableRow
-                    key={index}
-                    className="border-b border-gray-200 h-12"
-                  >
-                    <TableCell className="font-medium">
-                      {/* ID: {application?.orderId.slice(-8)} */}
-                    </TableCell>
-                    <TableCell>{application?.userDetails?.Username}</TableCell>
-                    <TableCell>{application?.userDetails?.Email}</TableCell>
-                    <TableCell>{application?.shippingDetails?.City}</TableCell>
-                    <TableCell>{application?.products?.length}</TableCell>
-                    <TableCell>{application?.payment?.paymentMode}</TableCell>
-                    <TableCell>{application?.payment?.amount}</TableCell>
-                    <TableCell>{application?.payment?.amount}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`font-medium ${
-                          application?.subOrderStatus === "Pending"
-                            ? "text-amber-500"
-                            : application?.subOrderStatus === "Completed"
-                            ? "text-green-500"
-                            : application?.subOrderStatus === "Rejected"
-                            ? "text-red-500"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {application?.subOrderStatus}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        href="#"
-                        className="text-[#106C83] hover:underline font-medium"
-                      >
-                        View Details
-                      </span>
-                    </TableCell>
+              <Table>
+                <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
+                  <TableRow className="">
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                      Order id.
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                      date
+                    </TableHead>
+
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                      Items
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                      payment type
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                      amount
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                      status
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                      Actions
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {data?.map((application, index) => (
+                    <TableRow
+                      key={index}
+                      className="border-b border-gray-200 h-12"
+                    >
+                      <TableCell className="font-medium">
+                        ID: {application?.orderId.slice(-8)}
+                      </TableCell>
+                      <TableCell>{formatDate(application?.createdAt)}</TableCell>
+                      <TableCell>
+                        {application?.vendorSubOrders[0]?.products?.length}
+                      </TableCell>
+                      <TableCell>{application?.paymentMode}</TableCell>
+                      <TableCell>
+                        {application?.vendorSubOrders[0]?.total}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={`font-medium ${
+                            application?.vendorSubOrders[0]?.status ===
+                            "Pending"
+                              ? "text-amber-500"
+                              : application?.subOrderStatus === "Completed"
+                              ? "text-green-500"
+                              : application?.subOrderStatus === "Rejected"
+                              ? "text-red-500"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {application?.vendorSubOrders[0]?.status}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          href="#"
+                          className="text-[#106C83] hover:underline font-medium"
+                        >
+                          View Details
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </div>
 

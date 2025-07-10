@@ -836,6 +836,8 @@ export default function NotVerifiedPage() {
               </div>
             </main>
           )}
+
+          
         </div>
       )}
     </>
