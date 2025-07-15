@@ -20,12 +20,12 @@ export function middleware(request) {
   const token = request.cookies.get("token")?.value;
   const isVerified = request.cookies.get("isCompanyVerified")?.value;
 
-  const unverifiedStatuses = ["Pending", "Requestsend","Reverify","Rejected"];
+  const unverifiedStatuses = ["Pending", "Requestsend","Resend","rejected"];
 
-  const isProtected = protectedRoutes.some(
+  const isProtected = protectedRoutes?.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
-  const isAuthRoute = authRoutes.some(
+  const isAuthRoute = authRoutes?.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
@@ -33,6 +33,11 @@ export function middleware(request) {
   const isProductViewDetailsRoute = pathname.startsWith("/Product-management/Viewdetails/");
 
   const isNotVerifiedPage = pathname === notVerifiedRoute;
+
+if (token && (!isVerified || isVerified === "undefined" || isVerified === "null")) {
+  return NextResponse.redirect(new URL("/Signin", request.url));
+}
+
 
   // 🔐 If not logged in, block access to protected + notverified routes
   if ((isProtected || isNotVerifiedPage || isProductViewDetailsRoute) && !token) {

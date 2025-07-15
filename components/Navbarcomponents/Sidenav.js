@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "@/public/Asset/Logo.png";
 import Logo2 from "@/public/Asset/Logo2.png";
 import {
@@ -29,11 +29,29 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@heroui/react";
 import { cn } from "@/lib/utils";
+import Cookies from "js-cookie";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Sidenav = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const [name, setname] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => {
+    const Name = Cookies.get("nme");
+    if (Name) {
+      setname(Name);
+    }
+  }, []);
 
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/" },
@@ -63,7 +81,28 @@ const Sidenav = () => {
     setIsMinimized(!isMinimized);
   };
 
+
+  const handleLogoutClick = () => {
+    setShowDialog(true);
+  };
+
+  const handleCancelLogout = () => {
+    setShowDialog(false);
+  };
+
+  const handleConfirmLogout = () => {
+    Cookies.remove("token");
+    Cookies.remove("usid");
+    Cookies.remove("isCompanyVerified");
+    Cookies.remove("nme");
+    setShowDialog(false);
+    router.refresh();
+  };
+
+
+
   return (
+    <>
     <div
       className={`h-screen sticky top-0 bottom-0 left-0 overflow-hidden border-r border-gray-300 hidden md:flex lg:flex flex-col items-center bg-white transition-all duration-700 ease-in-out ${
         isMinimized
@@ -115,7 +154,7 @@ const Sidenav = () => {
       <div className="flex w-full mt-3 px-2 flex-col flex-1">
         <div className="py-2">
           {!isMinimized && (
-            <p className="px-4 text-xs mb-2 font-medium text-gray-500 mb-1 transition-all duration-900 ease-in-out">
+            <p className="px-4 text-xs mb-2 font-medium text-gray-500  transition-all duration-900 ease-in-out">
               Menu
             </p>
           )}
@@ -249,75 +288,131 @@ const Sidenav = () => {
         </div>
 
         {/* User profile section */}
-        <div
-          className={cn(
-            "mt-auto border-t",
-            isMinimized ? "p-2" : "p-4",
-            "flex items-center"
-          )}
-        >
-          {isMinimized ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden cursor-pointer mx-auto">
+         <div
+            className={cn(
+              "mt-auto border-t",
+              isMinimized ? "p-2" : "p-4",
+              "flex items-center"
+            )}
+          >
+            {isMinimized ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden cursor-pointer mx-auto">
+                    <Image
+                      src={Logo || "/placeholder.svg"}
+                      alt="User Avatar"
+                      width={32}
+                      height={32}
+                      className="object-fill w-8 h-8"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="right"
+                  className="w-auto bg-white border border-gray-300 p-0"
+                >
+                  <div className="p-3 w-60">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
+                        <Image
+                          src={Logo || "/placeholder.svg"}
+                          alt="User Avatar"
+                          width={40}
+                          height={40}
+                          className="object-fill w-10 h-10"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-black">
+                          {name}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {new Date().toLocaleDateString("en-US", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      onPress={handleLogoutClick}
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-2 rounded-sm bg-red-500 text-white  flex items-center cursor-pointer"
+                    >
+                      <LogOut size={14} className="mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <>
+                <div
+                  onClick={handleLogoutClick}
+                  className="w-8 h-8 cursor-pointer rounded-full bg-gray-300 mr-2 overflow-hidden"
+                >
                   <Image
-                    src={User || "/placeholder.svg"}
+                    src={Logo || "/placeholder.svg"}
                     alt="User Avatar"
                     width={32}
                     height={32}
+                    className="object-fill w-8 h-8"
                   />
                 </div>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="w-auto p-0">
-                <div className="p-3 w-60">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-                      <Image
-                        src={User || "/placeholder.svg"}
-                        alt="User Avatar"
-                        width={40}
-                        height={40}
-                      />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Martin Sharma</p>
-                      <p className="text-xs text-white">
-                        Thursday, Mar 20, 2025
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-2 text-red-500 hover:text-red-600 hover:bg-red-50"
-                  >
-                    <LogOut size={14} className="mr-2" />
-                    Sign Out
-                  </Button>
+                <div
+                  onClick={handleLogoutClick}
+                  className="flex-1 w-56 cursor-pointer"
+                >
+                  <p className="text-sm font-medium"> {name}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {new Date().toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
                 </div>
-              </TooltipContent>
-            </Tooltip>
-          ) : (
-            <>
-              <div className="w-8 h-8 rounded-full bg-gray-300 mr-2 overflow-hidden">
-                <Image
-                  src={User || "/placeholder.svg"}
-                  alt="User Avatar"
-                  width={32}
-                  height={32}
+                <LogOut
+                  onClick={handleLogoutClick}
+                  size={14}
+                  className="cursor-pointer text-red-500"
                 />
-              </div>
-              <div className="flex-1 w-56">
-                <p className="text-sm font-medium">Martin Sharma</p>
-                <p className="text-xs text-gray-500 truncate">
-                  Thursday, Mar 20, 2025
-                </p>
-              </div>
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </div>
       </div>
     </div>
+
+ <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="bg-white border-none max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogDescription>
+              {` Are you sure you want to log out? You'll need to sign in again to
+              access your account.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onPress={handleCancelLogout}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              className="bg-red-500 text-white"
+              onPress={handleConfirmLogout}
+            >
+              Log Out
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+    </>
   );
 };
 

@@ -29,6 +29,7 @@ import { getVerificationStatusThunk } from "@/lib/Redux/Slices/vendorSlice";
 import CompanyRegistrationDialog from "@/components/Verficationcomponents/company-registration-dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import Resubmitdoc from "@/components/Verficationcomponents/Resubmitdoc";
 
 export default function NotVerifiedPage() {
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
@@ -130,6 +131,12 @@ export default function NotVerifiedPage() {
   useEffect(() => {
     if (status?.isCompanyVerified) {
       Cookies.set("isCompanyVerified", status.isCompanyVerified);
+    }
+  }, [status?.isCompanyVerified]);
+
+  useEffect(() => {
+    if (status?.isCompanyVerified === "Approved") {
+      window.location.href = "/";
     }
   }, [status?.isCompanyVerified]);
 
@@ -458,11 +465,11 @@ export default function NotVerifiedPage() {
               </div>
             </main>
           )}
-          {status?.isCompanyVerified === "Reverify" && (
+          {status?.isCompanyVerified === "Resend" && (
             <main className="max-w-5xl mx-auto space-y-6 border p-8 rounded-2xl bg-white ">
               <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Account Verification
+                  Account Re-Verification
                 </h1>
                 <Dialog
                   open={isLogoutDialogOpen}
@@ -509,17 +516,17 @@ export default function NotVerifiedPage() {
                 </Dialog>
               </div>
               {/* Alert Banner */}
-              <Alert className="mb-8 border-orange-200 bg-orange-50">
+              <Alert className="mb-8 border-red-200 bg-red-50">
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <div>
                   <h3 className="font-medium text-orange-800 mb-1">
-                    Verification In Progress
+                    Re-Verification Required
                   </h3>
                   <AlertDescription className="text-orange-700">
-                    Your verification documents have been submitted
-                    successfully. Our team is currently reviewing your
-                    application. This process may take up to 48 hours to
-                    complete.
+                    Your verification has been rejected or expired. Please
+                    resubmit the required details and documents for account
+                    re-verification. This process may take up to 48 hours once
+                    submitted.
                   </AlertDescription>
                 </div>
               </Alert>
@@ -534,20 +541,22 @@ export default function NotVerifiedPage() {
 
                   {/* Heading */}
                   <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-                    Verification Requested
+                   Re-Verification Needed
                   </h2>
 
                   {/* Description */}
                   <p className="text-gray-600 mb-6 max-w-md">
-                    Your documents have been submitted and are currently under
-                    review by our verification team.
+                    To regain access to your account, please resubmit your business details and verification documents. Our team will review them promptly.
+
                   </p>
 
                   {/* Status Badge */}
                   <div className="inline-flex items-center gap-2 bg-[#106C83]/10 text-[#106C83] px-4 py-2 rounded-full text-sm font-medium mb-6">
                     <Clock className="h-4 w-4" />
-                    Review in Progress
+                    Awaiting Re-Submission
                   </div>
+
+                  <Resubmitdoc />
                 </CardContent>
               </Card>
 
@@ -648,7 +657,7 @@ export default function NotVerifiedPage() {
               </div>
             </main>
           )}
-          {status?.isCompanyVerified === "Rejected" && (
+          {status?.isCompanyVerified === "rejected" && (
             <main className="max-w-5xl mx-auto space-y-6 border p-8 rounded-2xl bg-white ">
               <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-900">
@@ -707,7 +716,6 @@ export default function NotVerifiedPage() {
                   </h3>
                   <AlertDescription className="text-orange-700">
                     Your verification documents have been Rejected.
-                    
                   </AlertDescription>
                 </div>
               </Alert>
@@ -727,8 +735,8 @@ export default function NotVerifiedPage() {
 
                   {/* Description */}
                   <p className="text-gray-600 mb-6 max-w-md">
-                    Your documents have been submitted and are Rejected
-                     by our verification team.
+                    Your documents have been submitted and are Rejected by our
+                    verification team.
                   </p>
 
                   {/* Status Badge */}
@@ -836,8 +844,6 @@ export default function NotVerifiedPage() {
               </div>
             </main>
           )}
-
-          
         </div>
       )}
     </>

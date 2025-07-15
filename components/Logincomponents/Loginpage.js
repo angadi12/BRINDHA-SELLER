@@ -84,17 +84,16 @@ export default function LoginPage() {
       const result = await Vendorlogin(data);
 
       if (result && result.status) {
-        console.log(result)
-        // Store token and user info in localStorage
         Cookies.set("token", result?.token);
-        Cookies.set("isCompanyVerified",result?.data?.isCompanyVerified)
+        Cookies.set("isCompanyVerified", result?.data?.isCompanyVerified);
+        Cookies.set("usid", result?.data?._id);
+        Cookies.set("nme", result?.data?.Vendorname);
         addToast({
           title: `Login Successful`,
           description: `Login Successful`,
           variant: "success",
           duration: 5000,
         });
-        // Redirect to dashboard
         router.push("/");
       } else {
         setError(result?.message || "Invalid email or password.");
@@ -232,7 +231,6 @@ export default function LoginPage() {
     }
   };
 
-
   return (
     <div
       className="min-h-screen  relative flex md:items-center md:justify-center items-start justify-start md:p-6 p-2  overflow-hidden bg-[#EDC5C5]"
@@ -247,7 +245,7 @@ export default function LoginPage() {
         alt="backimage"
         className="absolute hidden md:block md:object-fill object-cover h-full w-full left-0 bottom-0 right-0 top-0"
       /> */}
-      <div className="p-2 my-12 md:my-0 rounded-3xl shadow-2xl bg-white w-full ">
+      <div className="p-2 my-12 md:my-0 rounded-3xl shadow-2xl bg-white w-11/12 ">
         <div className="w-full bg-white h-full md:p-10 p-2  mx-auto  flex flex-col md:flex-row rounded-2xl   border-dashed border-2 border-[#EDC5C5]  z-10 ">
           <Card className="w-full hidden md:flex flex-col justify-between items-start gap-4 py-0 overflow-hidden md:pt-6 md:px-4  md:w-5/12 bg-[#106C83]  text-white rounded-tl-xl rounded-tr-xl  md:rounded-bl-xl">
             <div className=" h-full flex justify-between flex-col">
@@ -265,7 +263,7 @@ export default function LoginPage() {
             <Image
               src={themeimage}
               alt="themeimage"
-              className="object-contain mt-auto"
+              className="object-contain mt-auto h-60 w-full"
             />
           </Card>
 
@@ -313,7 +311,7 @@ export default function LoginPage() {
                     <div className="mb-4">
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                          <Mail size={20} className="text-gray-400" />
+                          <Mail size={20} className="text-[#106C83]" />
                         </div>
                         <input
                           type="email"
@@ -328,7 +326,7 @@ export default function LoginPage() {
                     <div className="mb-4">
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                          <Lock size={20} className="text-gray-400" />
+                          <Lock size={20} className="text-[#106C83]" />
                         </div>
                         <input
                           type="password"
@@ -358,14 +356,7 @@ export default function LoginPage() {
                           Keep me Logged In
                         </label>
                       </div>
-                      <div>
-                        <Link
-                          href="#"
-                          className="text-sm text-[#106C83] hover:underline"
-                        >
-                          Forgot Password
-                        </Link>
-                      </div>
+                      <div></div>
                     </div>
 
                     <Button

@@ -249,7 +249,7 @@ export default function CompanyRegistrationDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#106C83] text-white rounded-md">
+        <Button className="bg-[#106C83] text-white cursor-pointer rounded-md">
           Complete Verification
         </Button>
       </DialogTrigger>
@@ -549,6 +549,7 @@ export default function CompanyRegistrationDialog() {
                   </Label>
                   <Input
                     type={"Number"}
+                    maxLength={6}
                     id="pincode"
                     value={formData.Address.Pincode}
                     onChange={(e) =>

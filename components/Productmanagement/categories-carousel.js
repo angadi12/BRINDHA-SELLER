@@ -13,12 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategories, fetchAllMeasurement, setSelectedCategoryId } from "@/lib/Redux/Slices/masterSlice";
 
 export default function CategoriesCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsPerView = 4;
   const dispatch = useDispatch();
 
   const { categories, loading, error,selectedCategoryId } = useSelector((state) => state.master);
-  const maxIndex = Math.max(0, categories.length - itemsPerView);
 
   useEffect(() => {
     dispatch(fetchAllCategories());
