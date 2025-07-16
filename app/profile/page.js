@@ -488,7 +488,7 @@ export default function Component() {
         </div>
       </div> */}
       <div className=" p-6 rounded-2xl">
-        <div className="flex gap-4 mb-8">
+        {/* <div className="flex gap-4 mb-8">
           <Button className="flex-1 bg-[#106C83] hover:bg-[#106C83] text-white py-3 rounded-lg font-medium">
             Save Changes
           </Button>
@@ -498,7 +498,7 @@ export default function Component() {
           >
             Cancel
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Action Buttons */}

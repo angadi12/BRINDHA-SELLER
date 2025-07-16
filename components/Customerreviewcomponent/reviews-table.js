@@ -37,7 +37,7 @@ const StarRating = ({ rating }) => {
         />
       ))}
       <span className="ml-2 text-sm font-medium text-gray-900">
-        {rating.toFixed(1)}
+        {rating?.toFixed(1)}
       </span>
     </div>
   );
@@ -52,14 +52,13 @@ export default function ReviewsTable() {
  dispatch(fetchAllTickets())
   }, [dispatch])
   
-
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 w-full ">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-900">Reviews List</h2>
         <div className="flex items-center gap-2">
-          <Select defaultValue="this-week">
+          {/* <Select defaultValue="this-week">
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
@@ -69,7 +68,7 @@ export default function ReviewsTable() {
               <SelectItem value="this-month">This Month</SelectItem>
               <SelectItem value="last-month">Last Month</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> */}
          
         </div>
       </div>
@@ -122,35 +121,39 @@ export default function ReviewsTable() {
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                       <Image
-                        src={review.productImage || "/placeholder.svg"}
-                        alt={review.productName}
+                        src={review?.ProductId?.Images[0] || "/placeholder.svg"}
+                        alt={review?.ProductId?.Name || "product-name"}
                         width={48}
                         height={48}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <span className="text-sm font-medium text-gray-900">
-                      {review.productName}
+                      {review?.ProductId?.Name}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm text-gray-900">{review.id}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm text-gray-900">{review.date}</span>
+                  <span className="text-sm text-gray-900">ID:{review?._id.slice(-8)}</span>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm text-gray-900">
-                    {review.reviewer}
+                   {new Date(review?.updatedAt)?.toLocaleDateString(
+                            "en-GB"
+                          )}
                   </span>
                 </TableCell>
                 <TableCell>
-                  <StarRating rating={review.rating} />
+                  <span className="text-sm text-gray-900">
+                    {review?.UserId?.Username}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <StarRating rating={review?.rating} />
                 </TableCell>
                 <TableCell>
                   <p className="text-sm text-gray-600 w-full truncate text-wrap">
-                    {review.reviewText}
+                    {review?.remarks}
                   </p>
                 </TableCell>
               </TableRow>

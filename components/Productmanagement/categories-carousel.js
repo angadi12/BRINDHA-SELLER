@@ -43,7 +43,7 @@ export default function CategoriesCarousel() {
           className="w-11/12 mx-auto"
         >
           <CarouselContent className="-ml-2 md:-ml-4">
-            {categories.map((category) => (
+            {categories?.map((category) => (
               <CarouselItem
                 key={category?.CategoryId?._id}
                 onClick={() =>

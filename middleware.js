@@ -34,9 +34,9 @@ export function middleware(request) {
 
   const isNotVerifiedPage = pathname === notVerifiedRoute;
 
-if (token && (!isVerified || isVerified === "undefined" || isVerified === "null")) {
-  return NextResponse.redirect(new URL("/Signin", request.url));
-}
+// if (token && (!isVerified || isVerified === "undefined" || isVerified === "null")) {
+//   return NextResponse.redirect(new URL("/Signin", request.url));
+// }
 
 
   // 🔐 If not logged in, block access to protected + notverified routes

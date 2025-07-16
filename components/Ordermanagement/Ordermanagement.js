@@ -34,12 +34,14 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { fetchAllorders } from "@/lib/Redux/Slices/orderSlice";
+import { useRouter } from "next/navigation";
 
 const Ordermanagement = () => {
   const [profileTab, setProfileTab] = useState("all");
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState("today");
   const { data, loading, error } = useSelector((state) => state.order);
+const router=useRouter()
 
   useEffect(() => {
     dispatch(fetchAllorders(selectedValue));
@@ -165,14 +167,16 @@ const Ordermanagement = () => {
                       </TableCell>
                       <TableCell>
                         <span
-                          className={`font-medium ${
+                          className={`font-medium text-xs ${
                             application?.vendorSubOrders[0]?.status ===
                             "Pending"
-                              ? "text-amber-500"
+                              ? "text-amber-500 rounded-full p-1 bg-amber-50 border border-amber-500"
                               : application?.subOrderStatus === "Completed"
-                              ? "text-green-500"
+                              ? "text-green-500 bg-green-50 border border-green-500 rounded-full p-1"
+                              : application?.vendorSubOrders[0]?.status === "Delivered"
+                              ? "text-green-500 bg-green-50 border border-green-500 rounded-full p-1"
                               : application?.subOrderStatus === "Rejected"
-                              ? "text-red-500"
+                              ? "text-red-500 bg-red-50 border border-red-500 rounded-full p-1"
                               : "text-gray-500"
                           }`}
                         >
@@ -181,8 +185,8 @@ const Ordermanagement = () => {
                       </TableCell>
                       <TableCell>
                         <span
-                          href="#"
-                          className="text-[#106C83] hover:underline font-medium"
+                         onClick={()=>router.push(`/Order-Management/Vieworder/${application?.orderId}`)}
+                          className="text-[#106C83] hover:underline font-medium cursor-pointer"
                         >
                           View Details
                         </span>

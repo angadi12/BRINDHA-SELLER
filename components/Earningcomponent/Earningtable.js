@@ -228,22 +228,22 @@ export default function Earningtable() {
                   <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
                     <TableRow className="">
                       <TableHead className="text-xs font-medium text-gray-500">
-                        BUSINESS NAME
+                         NAME
                       </TableHead>
                       <TableHead className="text-xs font-medium text-gray-500">
-                        LOCATION
+                        ID
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                        paymentMode
                       </TableHead>
                       <TableHead className="text-xs font-medium text-gray-500">
-                        OWNER NAME
+                         DATE
                       </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        EMAIL ID
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                       amount
                       </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        CONTACT
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        REGISTRATION DATE
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                       commissionAmount
                       </TableHead>
                       <TableHead className="text-xs font-medium text-gray-500">
                         STATUS
@@ -260,32 +260,32 @@ export default function Earningtable() {
                         className="border-b border-gray-200 h-12"
                       >
                         <TableCell className="font-medium">
-                          {application?.BussinessName}
+                          {application?.user?.Username}
                         </TableCell>
                         <TableCell>
-                          {application?.CompanyId?.Address?.City}
+                         #ID{application?.userId.slice(-8)}
                         </TableCell>
-                        <TableCell>{application?.Vendorname}</TableCell>
-                        <TableCell>{application.Email}</TableCell>
-                        <TableCell>{application?.Number}</TableCell>
+                        <TableCell>{application?.paymentMode}</TableCell>
                         <TableCell>
                           {new Date(application?.createdAt)?.toLocaleDateString(
                             "en-GB"
                           )}
                         </TableCell>
+                        <TableCell>{application.amount}</TableCell>
+                        <TableCell>{application?.commissionAmount}</TableCell>
                         <TableCell>
                           <Badge
                             className={`font-medium ${
-                              application.isCompanyVerified === "Pending"
-                                ? "text-amber-500"
-                                : application.isCompanyVerified === "Approved"
+                              application.PayoutStatus === "Pending"
+                                ? "text-amber-500 border-amber-200 bg-amber-50"
+                                : application.PayoutStatus === "Completed"
                                 ? "text-green-500 border-green-200 bg-green-50"
-                                : application.isCompanyVerified === "Rejected"
+                                : application.PayoutStatus === "Rejected"
                                 ? "text-red-500"
                                 : "text-gray-500"
                             }`}
                           >
-                            {application.isCompanyVerified}
+                            {application.PayoutStatus}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -339,23 +339,23 @@ export default function Earningtable() {
                 <Table>
                   <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
                     <TableRow className="">
+                      {/* <TableHead className="text-xs font-medium text-gray-500">
+                         NAME
+                      </TableHead> */}
                       <TableHead className="text-xs font-medium text-gray-500">
-                        BUSINESS NAME
+                        ID
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                        paymentMode
                       </TableHead>
                       <TableHead className="text-xs font-medium text-gray-500">
-                        LOCATION
+                         DATE
                       </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        OWNER NAME
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                       amount
                       </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        EMAIL ID
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        CONTACT
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        REGISTRATION DATE
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                       commissionAmount
                       </TableHead>
                       <TableHead className="text-xs font-medium text-gray-500">
                         STATUS
@@ -366,47 +366,64 @@ export default function Earningtable() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paidpayout?.map((application, index) => (
+                    {pendingpayout?.map((application, index) => (
                       <TableRow
                         key={index}
                         className="border-b border-gray-200 h-12"
                       >
-                        <TableCell className="font-medium">
-                          {application?.BussinessName}
-                        </TableCell>
+                        {/* <TableCell className="font-medium">
+                          {application?.user?.Username}
+                        </TableCell> */}
                         <TableCell>
-                          {application?.CompanyId?.Address?.City}
+                         #ID{application?.payments[0]?.userId.slice(-8)}
                         </TableCell>
-                        <TableCell>{application?.Vendorname}</TableCell>
-                        <TableCell>{application.Email}</TableCell>
-                        <TableCell>{application?.Number}</TableCell>
+                        <TableCell>{application?.payments[0]?.paymentMode}</TableCell>
                         <TableCell>
                           {new Date(application?.createdAt)?.toLocaleDateString(
                             "en-GB"
                           )}
                         </TableCell>
+                        <TableCell>{application?.payments[0]?.amount}</TableCell>
+                        <TableCell>{application?.payments[0]?.commissionAmount}</TableCell>
                         <TableCell>
                           <Badge
                             className={`font-medium ${
-                              application?.PayoutStatus === "Pending"
-                                ? "text-amber-500"
-                                : application?.PayoutStatus === "Approved"
+                              application.status === "Pending"
+                                ? "text-amber-500 border-amber-200 bg-amber-50"
+                                : application.status === "Completed"
                                 ? "text-green-500 border-green-200 bg-green-50"
-                                : application?.PayoutStatus === "Rejected"
+                                : application.status === "Rejected"
                                 ? "text-red-500"
                                 : "text-gray-500"
                             }`}
                           >
-                            {application?.PayoutStatus}
+                            {application.status}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <span
-                            onClick={() => router.push(`/`)}
-                            className="text-[#106C83] cursor-pointer hover:underline font-medium"
-                          >
-                            View Details
-                          </span>
+                          {application.isCompanyVerified === "Approved" ? (
+                            <span
+                              onClick={() =>
+                                router.push(
+                                  `/product-seller/profile/${application?._id}`
+                                )
+                              }
+                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
+                            >
+                              View Profile
+                            </span>
+                          ) : (
+                            <span
+                              onClick={() =>
+                                router.push(
+                                  `/product-seller/profiledoc/${application?._id}`
+                                )
+                              }
+                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
+                            >
+                              View Details
+                            </span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

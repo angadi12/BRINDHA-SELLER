@@ -4,7 +4,7 @@ import Nav from "@/components/Navbarcomponents/Nav";
 import Sidenav from "@/components/Navbarcomponents/Sidenav";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HeroUIProvider } from "@heroui/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
@@ -12,6 +12,7 @@ import { getVerificationStatusThunk } from "@/lib/Redux/Slices/vendorSlice";
 
 export function NextuiProviderWrapper({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { status, loading, error } = useSelector((state) => state.vendor);
   const [localstatus, setStatus] = useState("");
   const [localtoken, settoken] = useState("");
@@ -30,15 +31,27 @@ export function NextuiProviderWrapper({ children }) {
     if (localtoken) {
       dispatch(getVerificationStatusThunk());
     }
-  }, [dispatch]);
+  }, [dispatch, localtoken]);
 
   useEffect(() => {
     if (status?.isCompanyVerified !== localstatus) {
+      Cookies.remove("isCompanyVerified");
       Cookies.set("isCompanyVerified", status?.isCompanyVerified);
     } else {
       Cookies.set("isCompanyVerified", status?.isCompanyVerified);
     }
   }, [status?.isCompanyVerified]);
+
+  useEffect(() => {
+    if (
+      status?.isCompanyVerified === "Resend" ||
+      status?.isCompanyVerified === "Pending" ||
+      status?.isCompanyVerified === "rejected"
+    ) {
+      router.push("/notverified");
+      return;
+    }
+  }, [status]);
 
   return (
     <HeroUIProvider>
