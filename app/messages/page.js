@@ -200,7 +200,7 @@ export default function MessagingInterface() {
     name: ticket.TicketTitle || "Unknown",
     avatar: "/placeholder.svg",
     lastMessage:
-      ticket.Message?.[ticket?.Message?.length - 1]?.msg || "No message yet",
+      ticket.Message?.[ticket?.Message?.length - 1]?.msg,
     lastMessageTime: ticket.Message?.[ticket?.Message?.length - 1]?.date || "",
     email: "",
     phone: "",
@@ -220,7 +220,7 @@ export default function MessagingInterface() {
   }, [contacts]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+   
 
     // const messageData = {
     //   msg: newMessage,
@@ -232,8 +232,8 @@ export default function MessagingInterface() {
       let documentUrl = "";
 
       // 1. Upload file if exists
-      if (uploadedFile) {
-        const uploadRes = await Uploadfile(uploadedFile);
+      if (uploadedFile1) {
+        const uploadRes = await Uploadfile(uploadedFile1);
         if (uploadRes?.status) {
           documentUrl = uploadRes?.data;
         } else {
@@ -705,7 +705,7 @@ export default function MessagingInterface() {
                         </DialogContent>
                       </Dialog>
                     )}
-                    <p>{message?.content}</p>
+                   {message?.content && <p>{message?.content}</p>}
                     <span className="text-xs text-gray-400 block mt-1 text-right">
                       {new Date(message?.timestamp).toLocaleDateString("en-US")}
                     </span>
