@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Filter } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,8 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@heroui/react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -19,15 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { MapPin, Mail, Phone, Store, ChevronRight } from "lucide-react";
-import dashiconsstore from "@/public/Asset/dashiconsstore.png";
-import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllSellars } from "@/lib/Redux/Slices/sellarSlice";
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -40,31 +33,49 @@ import {
   FetchAllpendingpayout,
 } from "@/lib/Redux/Slices/revenueSlice";
 
+const filterAndSortData = (filterValue, sortValue) => {
+  // Implement filtering and sorting logic here
+};
+
 export default function Earningtable() {
   const [selectedValue, setSelectedValue] = useState("this-week");
   const [sortValue, setSortValue] = useState("sort-by");
   const [profileTab, setProfileTab] = useState("all");
   const [Tab, setTab] = useState("applications");
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const router = useRouter();
   const [filteredData, setFilteredData] = useState([]);
 
-  const { pendingpayout, pendingpayoutloading, pendingpayouterror } =
-    useSelector((state) => state.revenue);
+  const {
+    pendingpayout,
+    pendingpayoutloading,
+    pendingpayouterror,
+    pendingpayoutPagination,
+  } = useSelector((state) => state.revenue);
 
-  const { paidpayout, paidpayoutloading, paidpayouterror } = useSelector(
-    (state) => state.revenue
-  );
+  const {
+    paidpayout,
+    paidpayoutloading,
+    paidpayouterror,
+    paidpayoutPagination,
+  } = useSelector((state) => state.revenue);
+
   const dispatch = useDispatch();
 
+  console.log("Paid Pagination:", paidpayoutPagination);
+  console.log("Pending Pagination:", pendingpayoutPagination);
+
   useEffect(() => {
-    if (profileTab === "all")
-      dispatch(FetchAllpaidpayout({ page: 1, limit: 10 }));
-    if (profileTab === "pending")
-      dispatch(FetchAllpendingpayout({ page: 1, limit: 10 }));
-  }, [dispatch, profileTab]);
+    if (profileTab === "all") {
+      dispatch(FetchAllpaidpayout({ page: currentPage, limit: itemsPerPage }));
+    }
+    if (profileTab === "pending") {
+      dispatch(
+        FetchAllpendingpayout({ page: currentPage, limit: itemsPerPage })
+      );
+    }
+  }, [dispatch, profileTab, currentPage, itemsPerPage]);
 
   const handleSelectChange = (value) => {
     setSelectedValue(value);
@@ -83,84 +94,259 @@ export default function Earningtable() {
     return new Date(utcDate.getTime() + istOffset);
   };
 
-  // const filterAndSortData = (period, sortBy) => {
-  //   const now = new Date();
-  //   const currentIST = convertToIST(now);
-  //   const currentMonth = currentIST.getMonth();
-  //   const currentYear = currentIST.getFullYear();
-
-  //   const filtered = data?.filter((item) => {
-  //     const createdAtIST = convertToIST(item.createdAt);
-  //     const updatedAtIST = convertToIST(item.updatedAt);
-
-  //     if (period === "this-month") {
-  //       const createdInThisMonth =
-  //         createdAtIST.getMonth() === currentMonth &&
-  //         createdAtIST.getFullYear() === currentYear;
-
-  //       const updatedInThisMonth =
-  //         updatedAtIST.getMonth() === currentMonth &&
-  //         updatedAtIST.getFullYear() === currentYear;
-
-  //       return createdInThisMonth || updatedInThisMonth;
-  //     }
-
-  //     if (period === "this-week") {
-  //       const startOfWeek = new Date(currentIST);
-  //       startOfWeek.setDate(currentIST.getDate() - currentIST.getDay());
-  //       startOfWeek.setHours(0, 0, 0, 0);
-
-  //       return createdAtIST >= startOfWeek || updatedAtIST >= startOfWeek;
-  //     }
-
-  //     if (period === "this-year") {
-  //       return (
-  //         createdAtIST.getFullYear() === currentYear ||
-  //         updatedAtIST.getFullYear() === currentYear
-  //       );
-  //     }
-
-  //     return true;
-  //   });
-
-  //   const sortedData = sortData(filtered, sortBy);
-  //   setFilteredData(sortedData);
-  // };
-
-  // const sortData = (data, sortBy) => {
-  //   switch (sortBy) {
-  //     case "name-asc":
-  //       return data?.sort((a, b) =>
-  //         (a?.BusinessName || "").localeCompare(b?.BusinessName || "")
-  //       );
-  //     case "name-desc":
-  //       return data?.sort((a, b) =>
-  //         (b?.BusinessName || "").localeCompare(a?.BusinessName || "")
-  //       );
-  //     case "rating-high":
-  //       return data?.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-  //     case "rating-low":
-  //       return data?.sort((a, b) => (a.rating || 0) - (b.rating || 0));
-  //     default:
-  //       return data;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   filterAndSortData(selectedValue, sortValue);
-  // }, [selectedValue, sortValue, data]);
-
   const handletabchange = (value) => {
     setTab(value);
   };
 
-  // const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentItems = filteredData?.slice(indexOfFirstItem, indexOfLastItem);
-  // const totalPages = Math.ceil(filteredData?.length / itemsPerPage);
+  const handlePageChange = (newPage) => {
+    const pagination = getCurrentPagination();
+    if (
+      pagination &&
+      newPage >= 1 &&
+      newPage <= pagination.totalPages &&
+      newPage !== currentPage
+    ) {
+      setCurrentPage(newPage);
+    }
+  };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  // Get current pagination data based on active tab
+  const getCurrentPagination = () => {
+    return profileTab === "all"
+      ? paidpayoutPagination
+      : pendingpayoutPagination;
+  };
+
+  // Generate page numbers to display
+  const getVisiblePages = () => {
+    const pagination = getCurrentPagination();
+    if (!pagination) return [];
+
+    const { page: currentPageFromAPI, totalPages } = pagination;
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
+
+    // Always show first page
+    range.push(1);
+
+    // Add pages around current page
+    for (
+      let i = Math.max(2, currentPageFromAPI - delta);
+      i <= Math.min(totalPages - 1, currentPageFromAPI + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    // Always show last page if there are multiple pages
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    // Remove duplicates and sort
+    const uniqueRange = [...new Set(range)].sort((a, b) => a - b);
+
+    // Add ellipsis where needed
+    let prev = 0;
+    for (const page of uniqueRange) {
+      if (page - prev > 1) {
+        rangeWithDots.push("ellipsis");
+      }
+      rangeWithDots.push(page);
+      prev = page;
+    }
+
+    return rangeWithDots;
+  };
+
+  // Reset to page 1 when switching tabs
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [profileTab]);
+
+  const renderPagination = () => {
+    const pagination = getCurrentPagination();
+
+    // Show pagination info even if there's only one page
+    if (!pagination) {
+      return null;
+    }
+
+    const { page: currentPageFromAPI, totalPages, total } = pagination;
+
+    // Option 1: Always show pagination (even for single page)
+    // Comment out the line below if you want to always show pagination
+    if (totalPages <= 1) {
+      return (
+        <div className="mt-6">
+          <div className="text-sm text-gray-500 text-center">
+            Showing {total} item{total !== 1 ? "s" : ""} (Page 1 of 1)
+          </div>
+        </div>
+      );
+    }
+
+    // Option 2: Only show full pagination for multiple pages
+    const visiblePages = getVisiblePages();
+
+    return (
+      <div className="mt-6">
+        <Pagination>
+          <PaginationContent>
+            {/* Previous Button */}
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPageFromAPI - 1);
+                }}
+                className={
+                  currentPageFromAPI === 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {/* Page Numbers */}
+            {visiblePages.map((pageItem, index) => (
+              <PaginationItem key={index}>
+                {pageItem === "ellipsis" ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(pageItem);
+                    }}
+                    isActive={pageItem === currentPageFromAPI}
+                    className="cursor-pointer"
+                  >
+                    {pageItem}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+
+            {/* Next Button */}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPageFromAPI + 1);
+                }}
+                className={
+                  currentPageFromAPI === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+
+        {/* Pagination Info */}
+        <div className="mt-4 text-sm text-gray-500 text-center">
+          Showing page {currentPageFromAPI} of {totalPages} ({total} total
+          items)
+        </div>
+      </div>
+    );
+  };
+
+  // Alternative: Always show pagination component (for testing)
+  const renderPaginationAlways = () => {
+    const pagination = getCurrentPagination();
+
+    if (!pagination) {
+      return null;
+    }
+
+    const { page: currentPageFromAPI, totalPages, total } = pagination;
+    const visiblePages = getVisiblePages();
+
+    return (
+      <div className="mt-6">
+        <Pagination>
+          <PaginationContent>
+            {/* Previous Button */}
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPageFromAPI - 1);
+                }}
+                className={
+                  currentPageFromAPI === 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {/* Page Numbers - Always show at least page 1 */}
+            {totalPages === 1 ? (
+              <PaginationItem>
+                <PaginationLink
+                  href="#"
+                  isActive={true}
+                  className="cursor-pointer"
+                >
+                  1
+                </PaginationLink>
+              </PaginationItem>
+            ) : (
+              visiblePages.map((pageItem, index) => (
+                <PaginationItem key={index}>
+                  {pageItem === "ellipsis" ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(pageItem);
+                      }}
+                      isActive={pageItem === currentPageFromAPI}
+                      className="cursor-pointer"
+                    >
+                      {pageItem}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))
+            )}
+
+            {/* Next Button */}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPageFromAPI + 1);
+                }}
+                className={
+                  currentPageFromAPI === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+
+        {/* Pagination Info */}
+        <div className="mt-4 text-sm text-gray-500 text-center">
+          Showing page {currentPageFromAPI} of {totalPages} ({total} total
+          items)
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -210,7 +396,7 @@ export default function Earningtable() {
 
           {/* Table */}
           {profileTab === "all" && (
-            <div className=" rounded-md">
+            <div className="rounded-md">
               {paidpayoutloading ? (
                 <div className="flex items-center justify-center py-10 text-gray-500">
                   <span className="loader2 " />
@@ -224,105 +410,88 @@ export default function Earningtable() {
                   No data available
                 </div>
               ) : (
-                <Table>
-                  <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
-                    <TableRow className="">
-                      <TableHead className="text-xs font-medium text-gray-500">
-                         NAME
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        ID
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                        paymentMode
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                         DATE
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                       amount
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                       commissionAmount
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        STATUS
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        ACTION
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paidpayout?.map((application, index) => (
-                      <TableRow
-                        key={index}
-                        className="border-b border-gray-200 h-12"
-                      >
-                        <TableCell className="font-medium">
-                          {application?.user?.Username}
-                        </TableCell>
-                        <TableCell>
-                         #ID{application?.userId.slice(-8)}
-                        </TableCell>
-                        <TableCell>{application?.paymentMode}</TableCell>
-                        <TableCell>
-                          {new Date(application?.createdAt)?.toLocaleDateString(
-                            "en-GB"
-                          )}
-                        </TableCell>
-                        <TableCell>{application.amount}</TableCell>
-                        <TableCell>{application?.commissionAmount}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className={`font-medium ${
-                              application.PayoutStatus === "Pending"
-                                ? "text-amber-500 border-amber-200 bg-amber-50"
-                                : application.PayoutStatus === "Completed"
-                                ? "text-green-500 border-green-200 bg-green-50"
-                                : application.PayoutStatus === "Rejected"
-                                ? "text-red-500"
-                                : "text-gray-500"
-                            }`}
-                          >
-                            {application.PayoutStatus}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {application.isCompanyVerified === "Approved" ? (
-                            <span
-                              onClick={() =>
-                                router.push(
-                                  `/product-seller/profile/${application?._id}`
-                                )
-                              }
-                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
-                            >
-                              View Profile
-                            </span>
-                          ) : (
-                            <span
-                              onClick={() =>
-                                router.push(
-                                  `/product-seller/profiledoc/${application?._id}`
-                                )
-                              }
-                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
-                            >
-                              View Details
-                            </span>
-                          )}
-                        </TableCell>
+                <>
+                  <Table>
+                    <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
+                      <TableRow className="">
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          NAME
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          ID
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                          paymentMode
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          DATE
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                          amount
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                          commissionAmount
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          STATUS
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          ACTION
+                        </TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {paidpayout?.map((application, index) => (
+                        <TableRow
+                          key={index}
+                          className="border-b border-gray-200 h-12"
+                        >
+                          <TableCell className="font-medium">
+                            {application?.user?.Username}
+                          </TableCell>
+                          <TableCell>
+                            #ID{application?.userId.slice(-8)}
+                          </TableCell>
+                          <TableCell>{application?.paymentMode}</TableCell>
+                          <TableCell>
+                            {new Date(
+                              application?.createdAt
+                            )?.toLocaleDateString("en-GB")}
+                          </TableCell>
+                          <TableCell>{application.amount}</TableCell>
+                          <TableCell>{application?.commissionAmount}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={`font-medium ${
+                                application.PayoutStatus === "Pending"
+                                  ? "text-amber-500 border-amber-200 bg-amber-50"
+                                  : application.PayoutStatus === "Completed"
+                                  ? "text-green-500 border-green-200 bg-green-50"
+                                  : application.PayoutStatus === "Rejected"
+                                  ? "text-red-500"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {application.PayoutStatus}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-[#106C83] cursor-pointer hover:underline font-medium">
+                              View Invoice
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {renderPaginationAlways()}
+                </>
               )}
             </div>
           )}
 
           {profileTab === "pending" && (
-            <div className=" rounded-md">
+            <div className="rounded-md">
               {pendingpayoutloading ? (
                 <div className="flex items-center justify-center py-10 text-gray-500">
                   <span className="loader2 " />
@@ -336,99 +505,82 @@ export default function Earningtable() {
                   No data available
                 </div>
               ) : (
-                <Table>
-                  <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
-                    <TableRow className="">
-                      {/* <TableHead className="text-xs font-medium text-gray-500">
-                         NAME
-                      </TableHead> */}
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        ID
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                        paymentMode
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                         DATE
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                       amount
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500 uppercase">
-                       commissionAmount
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        STATUS
-                      </TableHead>
-                      <TableHead className="text-xs font-medium text-gray-500">
-                        ACTION
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingpayout?.map((application, index) => (
-                      <TableRow
-                        key={index}
-                        className="border-b border-gray-200 h-12"
-                      >
-                        {/* <TableCell className="font-medium">
-                          {application?.user?.Username}
-                        </TableCell> */}
-                        <TableCell>
-                         #ID{application?.payments[0]?.userId.slice(-8)}
-                        </TableCell>
-                        <TableCell>{application?.payments[0]?.paymentMode}</TableCell>
-                        <TableCell>
-                          {new Date(application?.createdAt)?.toLocaleDateString(
-                            "en-GB"
-                          )}
-                        </TableCell>
-                        <TableCell>{application?.payments[0]?.amount}</TableCell>
-                        <TableCell>{application?.payments[0]?.commissionAmount}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className={`font-medium ${
-                              application.status === "Pending"
-                                ? "text-amber-500 border-amber-200 bg-amber-50"
-                                : application.status === "Completed"
-                                ? "text-green-500 border-green-200 bg-green-50"
-                                : application.status === "Rejected"
-                                ? "text-red-500"
-                                : "text-gray-500"
-                            }`}
-                          >
-                            {application.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {application.isCompanyVerified === "Approved" ? (
-                            <span
-                              onClick={() =>
-                                router.push(
-                                  `/product-seller/profile/${application?._id}`
-                                )
-                              }
-                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
-                            >
-                              View Profile
-                            </span>
-                          ) : (
-                            <span
-                              onClick={() =>
-                                router.push(
-                                  `/product-seller/profiledoc/${application?._id}`
-                                )
-                              }
-                              className="text-[#106C83] cursor-pointer hover:underline font-medium"
-                            >
-                              View Details
-                            </span>
-                          )}
-                        </TableCell>
+                <>
+                  <Table>
+                    <TableHeader className="bg-gray-50 border border-gray-300 rounded-md">
+                      <TableRow className="">
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          ID
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                          paymentMode
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          DATE
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                          amount
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500 uppercase">
+                          commissionAmount
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          STATUS
+                        </TableHead>
+                        <TableHead className="text-xs font-medium text-gray-500">
+                          ACTION
+                        </TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {pendingpayout?.map((application, index) => (
+                        <TableRow
+                          key={index}
+                          className="border-b border-gray-200 h-12"
+                        >
+                          <TableCell>
+                            #ID{application?.payments[0]?.userId.slice(-8)}
+                          </TableCell>
+                          <TableCell>
+                            {application?.payments[0]?.paymentMode}
+                          </TableCell>
+                          <TableCell>
+                            {new Date(
+                              application?.createdAt
+                            )?.toLocaleDateString("en-GB")}
+                          </TableCell>
+                          <TableCell>
+                            {application?.payments[0]?.amount}
+                          </TableCell>
+                          <TableCell>
+                            {application?.payments[0]?.commissionAmount}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={`font-medium ${
+                                application.status === "Pending"
+                                  ? "text-amber-500 border-amber-200 bg-amber-50"
+                                  : application.status === "Completed"
+                                  ? "text-green-500 border-green-200 bg-green-50"
+                                  : application.status === "Rejected"
+                                  ? "text-red-500"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {application.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-[#106C83] cursor-pointer hover:underline font-medium">
+                              View Invoice
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {renderPaginationAlways()}
+                </>
               )}
             </div>
           )}

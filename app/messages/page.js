@@ -69,6 +69,8 @@ export default function MessagingInterface() {
   const [isHovered, setIsHovered] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [uploadedFilePreview, setUploadedFilePreview] = useState("");
+  const [openDialogMessageId, setOpenDialogMessageId] = useState(null);
+  const [hoveredMessageId, setHoveredMessageId] = useState(null);
 
   useEffect(() => {
     const id = Cookies.get("usid");
@@ -199,8 +201,7 @@ export default function MessagingInterface() {
     id: ticket._id,
     name: ticket.TicketTitle || "Unknown",
     avatar: "/placeholder.svg",
-    lastMessage:
-      ticket.Message?.[ticket?.Message?.length - 1]?.msg,
+    lastMessage: ticket.Message?.[ticket?.Message?.length - 1]?.msg,
     lastMessageTime: ticket.Message?.[ticket?.Message?.length - 1]?.date || "",
     email: "",
     phone: "",
@@ -220,7 +221,7 @@ export default function MessagingInterface() {
   }, [contacts]);
 
   const handleSendMessage = async () => {
-   
+    if (!newMessage.trim() && !uploadedFile1) return;
 
     // const messageData = {
     //   msg: newMessage,
@@ -260,16 +261,18 @@ export default function MessagingInterface() {
       });
 
       if (response?.success) {
-        // If the API call is successful, update the selected contact with the new message
+        const latestMessage = response?.data?.Message?.slice(-1)[0];
+
         setSelectedContact((prev) => ({
           ...prev,
           messages: [
             ...prev.messages,
             {
-              id: Date.now().toString(),
-              content: newMessage,
+              id: latestMessage?._id,
+              content: latestMessage?.msg,
+              document: latestMessage?.document,
               sender: "user",
-              timestamp: new Date().toLocaleTimeString("en-US"),
+              timestamp: latestMessage?.date,
             },
           ],
         }));
@@ -286,6 +289,9 @@ export default function MessagingInterface() {
           variant: "destructive",
           duration: 5000,
         });
+        setNewMessage("");
+        setUploadedFile1(null);
+        setUploadedFilePreview("");
       }
     } catch (error) {
       Setsending(false);
@@ -295,6 +301,9 @@ export default function MessagingInterface() {
         variant: "destructive",
         duration: 5000,
       });
+      setNewMessage("");
+      setUploadedFile1(null);
+      setUploadedFilePreview("");
     }
   };
 
@@ -618,14 +627,16 @@ export default function MessagingInterface() {
                   >
                     {message?.document && (
                       <Dialog
-                        open={isDialogOpen}
-                        onOpenChange={setIsDialogOpen}
+                        open={openDialogMessageId === message.id}
+                        onOpenChange={(open) =>
+                          setOpenDialogMessageId(open ? message.id : null)
+                        }
                       >
                         <DialogTrigger asChild>
                           <div
                             className="relative inline-block group w-full cursor-pointer"
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
+                            onMouseEnter={() => setHoveredMessageId(message.id)}
+                            onMouseLeave={() => setHoveredMessageId(null)}
                           >
                             <Image
                               className="w-full h-32 object-fill rounded-lg transition-transform hover:scale-[1.02]"
@@ -637,7 +648,9 @@ export default function MessagingInterface() {
                             {/* Download overlay - appears on hover */}
                             <div
                               className={`absolute inset-0 bg-black/20 rounded-lg transition-opacity duration-200 ${
-                                isHovered ? "opacity-100" : "opacity-0"
+                                hoveredMessageId === message.id
+                                  ? "opacity-100"
+                                  : "opacity-0"
                               }`}
                             >
                               <Button
@@ -657,7 +670,13 @@ export default function MessagingInterface() {
                             </div>
 
                             {/* Click indicator */}
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <div
+                              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+                                hoveredMessageId === message.id
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              }`}
+                            >
                               <div className="bg-black/30 rounded-full p-2">
                                 {/* <div className="w-8 h-8 border-2 border-white rounded-full flex items-center justify-center">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -666,7 +685,7 @@ export default function MessagingInterface() {
                             </div>
                           </div>
                         </DialogTrigger>
-
+                        <DialogTitle></DialogTitle>
                         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/80 border-none">
                           {/* Header with close and download buttons */}
                           <div className="absolute top-4 right-4 flex gap-2 z-10">
@@ -683,7 +702,7 @@ export default function MessagingInterface() {
                               )}
                             </Button>
                             <Button
-                              onClick={() => setIsDialogOpen(false)}
+                              onClick={() => setOpenDialogMessageId(null)}
                               className="h-10 w-10 p-0 bg-black/50 hover:bg-white/70 text-white border-none rounded-full"
                               variant="outline"
                             >
@@ -705,7 +724,7 @@ export default function MessagingInterface() {
                         </DialogContent>
                       </Dialog>
                     )}
-                   {message?.content && <p>{message?.content}</p>}
+                    {message?.content && <p>{message?.content}</p>}
                     <span className="text-xs text-gray-400 block mt-1 text-right">
                       {new Date(message?.timestamp).toLocaleDateString("en-US")}
                     </span>
@@ -713,7 +732,7 @@ export default function MessagingInterface() {
                 ))}
 
                 {uploadedFilePreview && (
-                  <div className="top-0 bottom-0 h-full w-full flex justify-center items-center  bg-black/80 absolute overflow-hidden">
+                  <div className="top-0 bottom-0 h-full w-full flex justify-center items-center  bg-black/95 absolute overflow-hidden">
                     <Button
                       onClick={() => {
                         setUploadedFilePreview(""), setUploadedFile1(null);
