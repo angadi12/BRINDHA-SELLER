@@ -197,22 +197,25 @@ export default function MessagingInterface() {
     dispatch(fetchAllTickets(activeTab));
   }, [dispatch, activeTab]);
 
-  const contacts = tickets?.map((ticket) => ({
-    id: ticket._id,
-    name: ticket.TicketTitle || "Unknown",
-    avatar: "/placeholder.svg",
-    lastMessage: ticket.Message?.[ticket?.Message?.length - 1]?.msg,
-    lastMessageTime: ticket.Message?.[ticket?.Message?.length - 1]?.date || "",
-    email: "",
-    phone: "",
-    messages: ticket?.Message?.map((msg) => ({
-      id: msg._id,
-      content: msg.msg,
-      document: msg.document,
-      sender: msg.user === userid ? "user" : "agent",
-      timestamp: msg.date,
-    })),
-  }));
+  const contacts = Array.isArray(tickets)
+    ? tickets.map((ticket) => ({
+        id: ticket._id,
+        name: ticket.TicketTitle || "Unknown",
+        avatar: "/placeholder.svg",
+        lastMessage: ticket.Message?.[ticket?.Message?.length - 1]?.msg,
+        lastMessageTime:
+          ticket.Message?.[ticket?.Message?.length - 1]?.date || "",
+        email: "",
+        phone: "",
+        messages: ticket?.Message?.map((msg) => ({
+          id: msg._id,
+          content: msg.msg,
+          document: msg.document,
+          sender: msg.user === userid ? "user" : "agent",
+          timestamp: msg.date,
+        })),
+      }))
+    : [];
 
   useEffect(() => {
     if (contacts?.length > 0 && !selectedContact) {
