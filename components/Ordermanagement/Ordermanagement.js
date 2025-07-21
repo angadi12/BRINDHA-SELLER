@@ -28,6 +28,7 @@ import { fetchAllSellars } from "@/lib/Redux/Slices/sellarSlice";
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
