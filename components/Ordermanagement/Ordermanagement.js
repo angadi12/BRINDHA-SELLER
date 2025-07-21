@@ -40,11 +40,13 @@ const Ordermanagement = () => {
   const [profileTab, setProfileTab] = useState("all");
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState("today");
-  const { data, loading, error } = useSelector((state) => state.order);
+  const { data, loading, error ,Pagination} = useSelector((state) => state.order);
 const router=useRouter()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   useEffect(() => {
-    dispatch(fetchAllorders(selectedValue));
+    dispatch(fetchAllorders({filter:selectedValue, page: currentPage, limit: itemsPerPage }));
   }, [dispatch, selectedValue]);
 
   const handleSelectChange = (value) => {
@@ -60,6 +62,167 @@ const router=useRouter()
       minute: "2-digit",
     });
   };
+
+
+ const handlePageChange = (newPage) => {
+    const pagination = getCurrentPagination();
+    if (
+      pagination &&
+      newPage >= 1 &&
+      newPage <= pagination.totalPages &&
+      newPage !== currentPage
+    ) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  // Get current pagination data based on active tab
+  const getCurrentPagination = () => {
+    return profileTab === "all"
+      ? Pagination
+      : Pagination;
+  };
+
+  // Generate page numbers to display
+  const getVisiblePages = () => {
+    const pagination = getCurrentPagination();
+    if (!pagination) return [];
+
+    const { page: currentPageFromAPI, totalPages } = pagination;
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
+
+    // Always show first page
+    range.push(1);
+
+    // Add pages around current page
+    for (
+      let i = Math.max(2, currentPageFromAPI - delta);
+      i <= Math.min(totalPages - 1, currentPageFromAPI + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    // Always show last page if there are multiple pages
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    // Remove duplicates and sort
+    const uniqueRange = [...new Set(range)].sort((a, b) => a - b);
+
+    // Add ellipsis where needed
+    let prev = 0;
+    for (const page of uniqueRange) {
+      if (page - prev > 1) {
+        rangeWithDots.push("ellipsis");
+      }
+      rangeWithDots.push(page);
+      prev = page;
+    }
+
+    return rangeWithDots;
+  };
+
+  // Reset to page 1 when switching tabs
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedValue]);
+
+
+
+ const renderPaginationAlways = () => {
+    const pagination = getCurrentPagination();
+
+    if (!pagination) {
+      return null;
+    }
+
+    const { page: currentPageFromAPI, totalPages, total } = pagination;
+    const visiblePages = getVisiblePages();
+
+    return (
+      <div className="mt-6">
+        <Pagination>
+          <PaginationContent>
+            {/* Previous Button */}
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPageFromAPI - 1);
+                }}
+                className={
+                  currentPageFromAPI === 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {/* Page Numbers - Always show at least page 1 */}
+            {totalPages === 1 ? (
+              <PaginationItem>
+                <PaginationLink
+                  href="#"
+                  isActive={true}
+                  className="cursor-pointer"
+                >
+                  1
+                </PaginationLink>
+              </PaginationItem>
+            ) : (
+              visiblePages.map((pageItem, index) => (
+                <PaginationItem key={index}>
+                  {pageItem === "ellipsis" ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(pageItem);
+                      }}
+                      isActive={pageItem === currentPageFromAPI}
+                      className="cursor-pointer"
+                    >
+                      {pageItem}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))
+            )}
+
+            {/* Next Button */}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPageFromAPI + 1);
+                }}
+                className={
+                  currentPageFromAPI === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+
+        {/* Pagination Info */}
+        <div className="mt-4 text-sm text-gray-500 text-center">
+          Showing page {currentPageFromAPI} of {totalPages} ({total} total
+          items)
+        </div>
+      </div>
+    );
+  };
+
 
   return (
     <div className="w-full rounded-lg border h-full bg-white p-4">
@@ -171,11 +334,11 @@ const router=useRouter()
                             application?.vendorSubOrders[0]?.status ===
                             "Pending"
                               ? "text-amber-500 rounded-full p-1 bg-amber-50 border border-amber-500"
-                              : application?.subOrderStatus === "Completed"
+                              : application?.vendorSubOrders[0]?.status === "Completed"
                               ? "text-green-500 bg-green-50 border border-green-500 rounded-full p-1"
                               : application?.vendorSubOrders[0]?.status === "Delivered"
                               ? "text-green-500 bg-green-50 border border-green-500 rounded-full p-1"
-                              : application?.subOrderStatus === "Rejected"
+                              : application?.vendorSubOrders[0]?.status === "Cancelled"
                               ? "text-red-500 bg-red-50 border border-red-500 rounded-full p-1"
                               : "text-gray-500"
                           }`}
@@ -197,7 +360,7 @@ const router=useRouter()
               </Table>
             )}
           </div>
-
+       {renderPaginationAlways()}
           {/* {!loading && !error && data?.length > 0 && (
             <div className="flex justify-center mt-4">
               <Pagination>

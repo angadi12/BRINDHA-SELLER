@@ -38,7 +38,7 @@ const filterAndSortData = (filterValue, sortValue) => {
 };
 
 export default function Earningtable() {
-  const [selectedValue, setSelectedValue] = useState("this-week");
+  const [selectedValue, setSelectedValue] = useState("today");
   const [sortValue, setSortValue] = useState("sort-by");
   const [profileTab, setProfileTab] = useState("all");
   const [Tab, setTab] = useState("applications");
@@ -63,19 +63,18 @@ export default function Earningtable() {
 
   const dispatch = useDispatch();
 
-  console.log("Paid Pagination:", paidpayoutPagination);
-  console.log("Pending Pagination:", pendingpayoutPagination);
+ 
 
   useEffect(() => {
     if (profileTab === "all") {
-      dispatch(FetchAllpaidpayout({ page: currentPage, limit: itemsPerPage }));
+      dispatch(FetchAllpaidpayout({filter:selectedValue, page: currentPage, limit: itemsPerPage }));
     }
     if (profileTab === "pending") {
       dispatch(
-        FetchAllpendingpayout({ page: currentPage, limit: itemsPerPage })
+        FetchAllpendingpayout({filter:selectedValue, page: currentPage, limit: itemsPerPage })
       );
     }
-  }, [dispatch, profileTab, currentPage, itemsPerPage]);
+  }, [dispatch, profileTab, currentPage, itemsPerPage,selectedValue]);
 
   const handleSelectChange = (value) => {
     setSelectedValue(value);
@@ -383,12 +382,13 @@ export default function Earningtable() {
             <div className="flex items-center gap-2 ml-4 shrink-0">
               <Select value={selectedValue} onValueChange={handleSelectChange}>
                 <SelectTrigger className="w-[130px] border-gray-200 bg-white text-sm">
-                  <SelectValue placeholder="This Week" />
+                  <SelectValue placeholder="today" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="this-week">This Week</SelectItem>
-                  <SelectItem value="this-month">This Month</SelectItem>
-                  <SelectItem value="this-year">This Year</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">This Month</SelectItem>
+                  <SelectItem value="year">This Year</SelectItem>
                 </SelectContent>
               </Select>
             </div>
