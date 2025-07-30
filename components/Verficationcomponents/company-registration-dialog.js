@@ -113,7 +113,6 @@ export default function CompanyRegistrationDialog() {
       BussinessName,
       BussinessEmail,
       BussinessNumber,
-      BussinessWebsite,
       Bussinesstype,
       GstNumber,
       PanNumber,
@@ -382,7 +381,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("GstNumber", e.target.value)
                     }
-                    placeholder="27AAAPL1234C1ZV"
+                    placeholder="Enter GST number"
                     required
                   />
                 </div>
@@ -396,7 +395,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("PanNumber", e.target.value)
                     }
-                    placeholder="AAAPL1234C"
+                    placeholder="Enter your PAN number"
                     required
                   />
                 </div>
@@ -436,7 +435,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("Bankdetails.BankName", e.target.value)
                     }
-                    placeholder="HDFC Bank"
+                    placeholder="Enter Your Bank name"
                     required
                   />
                 </div>
@@ -454,7 +453,7 @@ export default function CompanyRegistrationDialog() {
                         e.target.value
                       )
                     }
-                    placeholder="123456789012"
+                    placeholder="Enter your Account Number"
                     required
                   />
                 </div>
@@ -468,7 +467,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("Bankdetails.Ifsc", e.target.value)
                     }
-                    placeholder="HDFC0001234"
+                    placeholder="Enter your IFSC Code"
                     required
                   />
                 </div>
@@ -511,7 +510,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("Address.State", e.target.value)
                     }
-                    placeholder="Maharashtra"
+                    placeholder="Enter your State"
                     required
                   />
                 </div>
@@ -525,7 +524,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("Address.City", e.target.value)
                     }
-                    placeholder="Pune"
+                    placeholder="Enter your City name"
                     required
                   />
                 </div>
@@ -539,7 +538,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("Address.Place", e.target.value)
                     }
-                    placeholder="Shivaji Nagar"
+                    placeholder="Enter your place "
                     required
                   />
                 </div>
@@ -555,7 +554,7 @@ export default function CompanyRegistrationDialog() {
                     onChange={(e) =>
                       handleInputChange("Address.Pincode", e.target.value)
                     }
-                    placeholder="411005"
+                    placeholder="Enter your Pincode Number"
                     required
                   />
                 </div>
