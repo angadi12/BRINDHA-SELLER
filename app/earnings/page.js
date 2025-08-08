@@ -8,7 +8,6 @@ import Earningtable from "@/components/Earningcomponent/Earningtable";
 const page = () => {
   return (
     <ScrollArea className=" mx-auto p-4 w-full h-screen pb-14 mb-8">
-      {/* Top Cards */}
       <Earningstat/>
       <Earningtable/>
     </ScrollArea>
