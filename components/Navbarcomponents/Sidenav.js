@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Logo from "@/public/Asset/Logo.png";
+import Logo from "@/public/Asset/Logo3.png";
 import Logo2 from "@/public/Asset/Logo2.png";
 import {
   LayoutDashboard,
@@ -111,14 +111,14 @@ const Sidenav = () => {
       }`}
     >
       {/* Header with logo and toggle button */}
-      <div className="p-0 sticky top-0 border-b w-full h-16 flex justify-between items-center px-4 transition-all duration-300 ease-in-out">
+        <div className={`p-0 sticky top-0 border-b w-full  flex justify-between items-center px-4 transition-all duration-300 ease-in-out  ${isMinimized?"h-16":""}`}>
         {!isMinimized ? (
           <>
             <Image
               src={Logo || "/placeholder.svg"}
               alt="Brindah Logo"
               loading="lazy"
-              className="w-auto transition-all duration-500 ease-in-out"
+                className="w-16   object-fill transition-all duration-500 ease-in-out"
             />
             <Image
               src={Logo2 || "/placeholder.svg"}
@@ -291,20 +291,20 @@ const Sidenav = () => {
          <div
             className={cn(
               "mt-auto border-t",
-              isMinimized ? "p-2" : "p-4",
+              isMinimized ? "p-2" : "p-1",
               "flex items-center"
             )}
           >
             {isMinimized ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden cursor-pointer mx-auto">
+                  <div className="w-16 h-16 rounded-full bg-white overflow-hidden cursor-pointer mx-auto">
                     <Image
                       src={Logo || "/placeholder.svg"}
                       alt="User Avatar"
-                      width={32}
-                      height={32}
-                      className="object-fill w-8 h-8"
+                       width={40}
+                      height={40}
+                      className="object-contain w-16 h-16"
                     />
                   </div>
                 </TooltipTrigger>
@@ -353,14 +353,14 @@ const Sidenav = () => {
               <>
                 <div
                   onClick={handleLogoutClick}
-                  className="w-8 h-8 cursor-pointer rounded-full bg-gray-300 mr-2 overflow-hidden"
+                  className="w-16 h-16 cursor-pointer rounded-full bg-white mr-2 overflow-hidden"
                 >
                   <Image
                     src={Logo || "/placeholder.svg"}
                     alt="User Avatar"
-                    width={32}
-                    height={32}
-                    className="object-fill w-8 h-8"
+                    width={40}
+                    height={40}
+                    className="object-fill w-16 h-16"
                   />
                 </div>
                 <div
