@@ -1274,10 +1274,7 @@ export default function Component() {
                 />
               </div>
             </div>
-            {/* <p className="text-xs text-gray-500 mt-2">
-              Discount is automatically calculated based on Your Price and
-              Selling Price
-            </p> */}
+            
           </div>
 
           {/* Action Buttons */}
