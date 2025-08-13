@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { getVerificationStatusThunk } from "@/lib/Redux/Slices/vendorSlice";
+import { useMobileDetection } from "@/lib/hooks/use-mobile-detection"
+import MobileWarning from "@/lib/hooks/MobileWarning"
 
 export function NextuiProviderWrapper({ children }) {
   const pathname = usePathname();
@@ -17,6 +19,7 @@ export function NextuiProviderWrapper({ children }) {
   const [localstatus, setStatus] = useState("");
   const [localtoken, settoken] = useState("");
   const dispatch = useDispatch();
+  const { isMobile } = useMobileDetection()
 
   useEffect(() => {
     const Name = Cookies.get("isCompanyVerified");
@@ -52,6 +55,15 @@ export function NextuiProviderWrapper({ children }) {
       return;
     }
   }, [status]);
+
+//  if (isMobile) {
+//     return (
+//       <HeroUIProvider>
+//         <MobileWarning/>
+//       </HeroUIProvider>
+//     )
+//   }
+
 
   return (
     <HeroUIProvider>

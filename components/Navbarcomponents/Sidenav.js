@@ -17,7 +17,8 @@ import {
   PanelLeftOpen,
   PackageCheck,
   List,
-  UserRoundPen
+  UserRoundPen,
+  ShieldUser
 } from "lucide-react";
 import User from "@/public/Asset/User.png";
 import { usePathname, useRouter } from "next/navigation";
@@ -39,12 +40,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+
+const iconMap = {
+  LayoutDashboard,
+  PackageSearch,
+  PackageCheck,
+  ReceiptIndianRupee,
+  Mail,
+  Users,
+};
+
 const Sidenav = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const [name, setname] = useState("");
   const [showDialog, setShowDialog] = useState(false);
+const [navItems, setNavItems] = useState([]);
 
   useEffect(() => {
     const Name = Cookies.get("nme");
@@ -53,16 +65,23 @@ const Sidenav = () => {
     }
   }, []);
 
-  const navItems = [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-    { label: "Product management", icon: PackageSearch, path: "/Product-management" },
-    { label: "Order Management", icon: PackageCheck, path: "/Order-Management" },
-    // { label: "Service Providers", icon: Heart, path: "/service-providers" },
-    { label: "Earnings", icon: ReceiptIndianRupee, path: "/earnings" },
+useEffect(() => {
+  const storedNavItems = localStorage.getItem("navitems");
+  if (storedNavItems) {
+    setNavItems(JSON.parse(storedNavItems));
+  }
+}, []);
+
+  // const navItems = [
+  //   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  //   { label: "Product management", icon: PackageSearch, path: "/Product-management" },
+  //   { label: "Order Management", icon: PackageCheck, path: "/Order-Management" },
+  //   { label: "Manage Admins", icon:ShieldUser, path: "/manage-admins" },
+  //   { label: "Earnings", icon: ReceiptIndianRupee, path: "/earnings" },
    
-    { label: "Messages", icon: Mail, path: "/messages" },
-    { label: "Customer Reviews", icon: Users, path: "/customer-reviews" },
-  ];
+  //   { label: "Messages", icon: Mail, path: "/messages" },
+  //   { label: "Customer Reviews", icon: Users, path: "/customer-reviews" },
+  // ];
 
   const isActive = (path) => {
     if (path === "/" && pathname === "/") {
@@ -151,7 +170,7 @@ const Sidenav = () => {
         </Button>
       </div>
 
-      <div className="flex w-full mt-3 px-2 flex-col flex-1">
+      <div className="flex w-full  px-2 flex-col flex-1">
         <div className="py-2">
           {!isMinimized && (
             <p className="px-4 text-xs mb-2 font-medium text-gray-500  transition-all duration-900 ease-in-out">
@@ -165,8 +184,9 @@ const Sidenav = () => {
             )}
           >
             <TooltipProvider>
-              {navItems.map((item) =>
-                isMinimized ? (
+              {navItems.map((item) => {
+                const IconComponent = iconMap[item.icon] || LayoutDashboard; // fallback
+                return isMinimized ? (
                   <Tooltip key={item.label}>
                     <TooltipTrigger asChild>
                       <Button
@@ -177,7 +197,7 @@ const Sidenav = () => {
                             : "text-gray-700 hover:bg-gray-100"
                         }`}
                       >
-                        <item.icon size={18} />
+                        <IconComponent size={18} />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="p-2">
@@ -194,7 +214,7 @@ const Sidenav = () => {
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    <item.icon size={15} className="mr-2" />
+                    <IconComponent size={15} className="mr-2" />
                     <span
                       className={`transition-all transform duration-900 ${
                         isMinimized ? "w-20 opacity-0" : ""
@@ -204,7 +224,7 @@ const Sidenav = () => {
                     </span>
                   </Button>
                 )
-              )}
+              })}
             </TooltipProvider>
           </div>
         </div>

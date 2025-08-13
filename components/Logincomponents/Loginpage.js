@@ -88,6 +88,8 @@ export default function LoginPage() {
         Cookies.set("isCompanyVerified", result?.data?.isCompanyVerified);
         Cookies.set("usid", result?.data?._id);
         Cookies.set("nme", result?.data?.Vendorname);
+        localStorage.setItem("navitems", JSON.stringify(result?.navitems));
+         console.log(result?.navitems)
         addToast({
           title: `Login Successful`,
           description: `Login Successful`,

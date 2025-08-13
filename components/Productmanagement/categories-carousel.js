@@ -25,7 +25,7 @@ export default function CategoriesCarousel() {
 
 
   return (
-    <div className="w-full bg-white border rounded-lg mx-auto p-6">
+    <div className="w-full bg-white border rounded-lg mx-auto p-6 overflow-hidden">
       <h2 className="text-lg font-semibold text-gray-900 mb-6">
         Your Categories
       </h2>
@@ -40,9 +40,9 @@ export default function CategoriesCarousel() {
             align: "start",
             loop: false,
           }}
-          className="w-11/12 mx-auto"
+          className="w-11/12 mx-auto overflow-hidden"
         >
-          <CarouselContent className="-ml-2 md:-ml-4">
+          <CarouselContent className="-ml-2 md:-ml-4 overflow-hidden">
             {categories?.map((category) => (
               <CarouselItem
                 key={category?.CategoryId?._id}

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload } from "lucide-react";
+import { Upload, Camera, ArrowLeft } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useRef } from "react";
 import { useToast } from "@/components/ui/toast-provider";
@@ -24,8 +24,10 @@ import {
   fetchAllMeasurement,
 } from "@/lib/Redux/Slices/masterSlice";
 import { Uploadfiles } from "@/lib/API/fileupload/multiplefile";
-import { Addproducts } from "@/lib/API/Product/product";
-import Productimage from "@/public/Asset/Product1.png"
+import { Addproducts, Downloadtemplate } from "@/lib/API/Product/product";
+import Productimage from "@/public/Asset/Product1.png";
+import { useRouter } from "next/navigation";
+import { BaseUrl } from "@/lib/API/Baseurl";
 
 const defaultSizes = [
   "Small",
@@ -35,21 +37,51 @@ const defaultSizes = [
   "Double Extra Large",
 ];
 const defaultColors = [
-  "#106C83",
-  "#FF6B6B",
-  "#4ECDC4",
-  "#45B7D1",
-  "#96CEB4",
-  "#FFEAA7",
-  "#DDA0DD",
-  "#98D8C8",
-  "#F7DC6F",
-  "#BB8FCE",
-  "#85C1E9",
-  "#F1948A",
-  "#82E0AA",
-  "#D7BDE2",
-  "#A3E4D7",
+  "Teal Blue",
+  "Coral Red",
+  "Turquoise",
+  "Sky Blue",
+  "Sage Green",
+  "Pastel Yellow",
+  "Plum",
+  "Aqua Green",
+  "Golden Yellow",
+  "Lavender Purple",
+  "Soft Blue",
+  "Soft Salmon",
+  "Mint Green",
+  "Lilac",
+  "Seafoam Green",
+  "Jet Black",
+  "Charcoal Gray",
+  "Slate Gray",
+  "Ivory",
+  "White",
+  "Beige",
+  "Cream",
+  "Khaki",
+  "Camel",
+  "Chocolate Brown",
+  "Chestnut",
+  "Maroon",
+  "Burgundy",
+  "Scarlet",
+  "Rose Pink",
+  "Hot Pink",
+  "Magenta",
+  "Royal Blue",
+  "Navy Blue",
+  "Cobalt Blue",
+  "Ocean Blue",
+  "Forest Green",
+  "Olive Green",
+  "Emerald Green",
+  "Mustard Yellow",
+  "Sunflower Yellow",
+  "Copper",
+  "Bronze",
+  "Silver Gray",
+  "Gold"
 ];
 
 const categories = [
@@ -93,7 +125,7 @@ export default function Component() {
   const fileInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
-
+  const router = useRouter();
   const [formData, setFormData] = useState({
     Name: "Elite Sewing Machine",
     Description:
@@ -104,7 +136,7 @@ export default function Component() {
     Features: [],
     Yourprice: "599",
     SellingPrice: "799",
-    colors: defaultColors,
+    colors: [],
     Images: [],
     Ecofriendly: true,
     Stock: 0,
@@ -116,7 +148,7 @@ export default function Component() {
   const [thumbnailimages, setthumnailimage] = useState([]);
 
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [newColor, setNewColor] = useState("#000000");
+  const [newColor, setNewColor] = useState("");
 
   const [showSizePicker, setShowSizePicker] = useState(false);
   const [newSize, setNewSize] = useState("");
@@ -138,15 +170,13 @@ export default function Component() {
 
   const uniqueCategories = [
     ...new Map(
-      categories.map((item) => [item.CategoryId._id, item.CategoryId])
+      categories.map((item) => [item.CategoryId?._id, item.CategoryId])
     ).values(),
   ];
 
   const filteredSubcategories = categories.filter(
-    (item) => item.CategoryId._id === formData.CategoryId
+    (item) => item.CategoryId?._id === formData.CategoryId
   );
-
-  console.log(formData);
 
   const handleInputChange = (key, value) => {
     setFormData((prev) => {
@@ -237,8 +267,8 @@ export default function Component() {
         ...prev,
         colors: [...prev.colors, newColor],
       }));
-      setNewColor("#000000");
-      setShowColorPicker(false);
+      setNewColor("");
+      // setShowColorPicker(false);
     }
   };
 
@@ -437,21 +467,21 @@ export default function Component() {
         description: "Product added successfully!",
         variant: "success",
       });
- setFormData({
-      Name: "",
-      Description: "",
-      CategoryId: "",
-      SubcategoryId: "",
-      Measturments: "",
-      Features: [],
-      Yourprice: "",
-      SellingPrice: "",
-      Ecofriendly: true,
-      colors: defaultColors,
-      Images: [],
-      Stock: 0,
-    });
-    setPreviewImage(Productimage);
+      setFormData({
+        Name: "",
+        Description: "",
+        CategoryId: "",
+        SubcategoryId: "",
+        Measturments: "",
+        Features: [],
+        Yourprice: "",
+        SellingPrice: "",
+        Ecofriendly: true,
+        colors: defaultColors,
+        Images: [],
+        Stock: 0,
+      });
+      setPreviewImage(Productimage);
       // Optionally reset form or redirect here
     } catch (error) {
       console.error("Error adding product:", error);
@@ -474,6 +504,30 @@ export default function Component() {
       variant: "default",
     });
   };
+
+ const handleDownload = async () => {
+    try {
+      const response = await fetch(`${BaseUrl}/vendor/download-template`, {
+        method: "GET",
+      });
+
+      if (!response.ok) throw new Error("Failed to download file");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ProductTemplate.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+
 
   const handleCancel = () => {
     setFormData({
@@ -500,20 +554,51 @@ export default function Component() {
 
   return (
     <ScrollArea className="h-screen pb-14">
-      <div className="flex gap-6 p-6 bg-gray-50 min-h-screen">
+      <div className="flex justify-between items-center p-6">
+        <div>
+          <Button
+            onClick={() => router.back()}
+            className="flex-1   cursor-pointer bg-white hover:bg-white text-black"
+          >
+            <ArrowLeft /> Back
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleDownload}
+            className="flex-1 text-[#106C83] ring-[#0d5a6e] ring-1 hover:bg-white cursor-pointer bg-white capitalize"
+          >
+            Download bulk upload template
+          </Button>
+          <Button
+            onClick={handleAddBulkProduct}
+            className="flex-1 bg-[#106C83] hover:bg-[#0d5a6e] cursor-pointer text-white"
+          >
+            Add Bulk Product
+          </Button>
+        </div>
+      </div>
+      <div className="flex gap-6 px-6 bg-gray-50 min-h-screen">
         {/* Left Side - Preview */}
         <div className="w-80 bg-white rounded-lg p-4 h-fit border">
           <h3 className="text-lg font-semibold mb-4">Preview</h3>
 
           {/* Product Image */}
           <div className="mb-4">
-            <Image
-              src={previewImage || "/placeholder.svg"}
-              alt={formData.Name || "Product"}
-              width={280}
-              height={200}
-              className="w-full h-48 object-cover rounded-lg"
-            />
+            {thumbnailimages?.length !== 0 ? (
+              <Image
+                src={previewImage || "/placeholder.svg"}
+                alt={formData.Name || "Product"}
+                width={280}
+                height={200}
+                className="w-full h-48 object-cover rounded-lg"
+              />
+            ) : (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col gap-2 justify-center items-center text-center cursor-pointer hover:border-[#106C83] transition-colors">
+                <Camera className="text-[#106C83] font-semibold h-12 w-12" />{" "}
+                <p className="text-gray-600 font-medium">Image Preview</p>
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap items-center justify-start gap-2 mb-4">
             {thumbnailimages?.map((img, k) => (
@@ -559,7 +644,8 @@ export default function Component() {
             </div>
           </div>
           <div className="mb-4 ext-sm text-gray-600">
-           Stock :<p className="text-black inline-block text-sm">X{formData.Stock}</p>
+            Stock :
+            <p className="text-black inline-block text-sm">X{formData.Stock}</p>
           </div>
           {/* Size Selection */}
           <div className="mb-4">
@@ -570,7 +656,7 @@ export default function Component() {
                   key={size}
                   className="flex flex-col justify-items-start gap-1 w-full"
                 >
-                 <p>{size}</p>
+                  <p>{size}</p>
                 </div>
               ))}
             </div>
@@ -583,14 +669,8 @@ export default function Component() {
               {formData?.colors?.map((color, index) => (
                 <div
                   key={index}
-                  onClick={() => setSelectedColor(color)}
-                  className={`w-6 h-6 rounded-full cursor-pointer border-2 ${
-                    selectedColor === color
-                      ? "border-gray-800"
-                      : "border-gray-200"
-                  }`}
-                  style={{ backgroundColor: color }}
-                ></div>
+                  className={`w-auto text-xs px-2 rounded-full cursor-pointer border-1`}
+                >{color}</div>
               ))}
             </div>
           </div>
@@ -616,11 +696,9 @@ export default function Component() {
             >
               <div className="flex flex-col items-center">
                 <Upload className="w-12 h-12 text-[#106C83] mb-2" />
-                <p className="text-gray-600 font-medium">
-                  Drop your Image/Video
-                </p>
+                <p className="text-gray-600 font-medium">Upload your Images</p>
                 <p className="text-sm text-gray-500">
-                  Recommended: PNG, JPG & GIF files
+                  Recommended: PNG, JPG & JPEG files
                 </p>
                 {formData?.Images?.length > 0 && (
                   <p className="text-sm text-green-600 mt-2">
@@ -786,7 +864,7 @@ export default function Component() {
                       <span className="loader2"></span>
                     ) : (
                       uniqueCategories.find(
-                        (cat) => cat._id === formData.CategoryId
+                        (cat) => cat?._id === formData.CategoryId
                       )?.Categoryname || "Select category"
                     )}
                   </SelectValue>
@@ -796,8 +874,8 @@ export default function Component() {
                     <span className="loader2"></span>
                   ) : uniqueCategories.length > 0 ? (
                     uniqueCategories.map((cat) => (
-                      <SelectItem key={cat._id} value={cat._id}>
-                        {cat.Categoryname}
+                      <SelectItem key={cat?._id} value={cat?._id}>
+                        {cat?.Categoryname}
                       </SelectItem>
                     ))
                   ) : (
@@ -824,7 +902,7 @@ export default function Component() {
                       <span className="loader2"></span>
                     ) : (
                       categories.find(
-                        (sub) => sub._id === formData.SubcategoryId
+                        (sub) => sub?._id === formData?.SubcategoryId
                       )?.Subcategoryname || "Select Sub-category"
                     )}
                   </SelectValue>
@@ -834,8 +912,8 @@ export default function Component() {
                     <span className="loader2"></span>
                   ) : filteredSubcategories.length > 0 ? (
                     filteredSubcategories.map((sub) => (
-                      <SelectItem key={sub._id} value={sub._id}>
-                        {sub.Subcategoryname}
+                      <SelectItem key={sub?._id} value={sub?._id}>
+                        {sub?.Subcategoryname}
                       </SelectItem>
                     ))
                   ) : (
@@ -1077,10 +1155,9 @@ export default function Component() {
                 {formData?.colors?.map((color, index) => (
                   <div key={index} className="relative group">
                     <div
-                      className="w-8 h-8 rounded-full border-2 border-gray-200 cursor-pointer"
-                      style={{ backgroundColor: color }}
+                      className="w-auto text-xs text-[#106C83] px-2 rounded-full border-1 border-[#106C83] cursor-pointer"
                       title={color}
-                    ></div>
+                    >{color}</div>
                     <button
                       onClick={() => handleRemoveColor(color)}
                       className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity"
@@ -1095,17 +1172,11 @@ export default function Component() {
               {showColorPicker ? (
                 <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
                   <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={newColor}
-                      onChange={(e) => setNewColor(e.target.value)}
-                      className="w-12 h-8 rounded border cursor-pointer"
-                    />
                     <Input
                       type="text"
                       value={newColor}
                       onChange={(e) => setNewColor(e.target.value)}
-                      placeholder="#000000"
+                      placeholder="Choose color"
                       className="flex-1 text-sm"
                       pattern="^#[0-9A-Fa-f]{6}$"
                     />
@@ -1132,16 +1203,15 @@ export default function Component() {
                   {/* Color Palette Presets */}
                   <div className="space-y-2">
                     <p className="text-xs text-gray-600">Quick Colors:</p>
-                    <div className="grid grid-cols-8 gap-1">
+                    <div className="grid grid-cols-4 gap-1">
                       {defaultColors?.map((color) => (
                         <button
                           key={color}
                           type="button"
                           onClick={() => setNewColor(color)}
-                          className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
-                          style={{ backgroundColor: color }}
+                          className="w-auto text-sm p-1 rounded  border border-gray-300 hover:scale-110 transition-transform"
                           title={color}
-                        />
+                        >{color}</button>
                       ))}
                     </div>
                   </div>
@@ -1151,7 +1221,7 @@ export default function Component() {
                   type="button"
                   onClick={() => setShowColorPicker(true)}
                   variant="outline"
-                className="w-full cursor-pointer border-[#106C83] bg-[#106C83] text-white hover:bg-[#106C83] hover:text-white"
+                  className="w-full cursor-pointer border-[#106C83] bg-[#106C83] text-white hover:bg-[#106C83] hover:text-white"
                 >
                   + New Color
                 </Button>
@@ -1219,12 +1289,6 @@ export default function Component() {
             >
               {isLoading ? <span className="loader"></span> : "Add Product"}
             </Button>
-            {/* <Button
-              onClick={handleAddBulkProduct}
-              className="flex-1 bg-[#106C83] hover:bg-[#0d5a6e] cursor-pointer text-white"
-            >
-              Add Bulk Product
-            </Button> */}
             <Button
               onClick={handleCancel}
               variant="outline"
