@@ -56,13 +56,13 @@ export function NextuiProviderWrapper({ children }) {
     }
   }, [status]);
 
-//  if (isMobile) {
-//     return (
-//       <HeroUIProvider>
-//         <MobileWarning/>
-//       </HeroUIProvider>
-//     )
-//   }
+ if (isMobile) {
+    return (
+      <HeroUIProvider>
+        <MobileWarning/>
+      </HeroUIProvider>
+    )
+  }
 
 
   return (

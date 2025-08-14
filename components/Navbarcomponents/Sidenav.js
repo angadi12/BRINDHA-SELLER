@@ -48,6 +48,7 @@ const iconMap = {
   ReceiptIndianRupee,
   Mail,
   Users,
+  ShieldUser
 };
 
 const Sidenav = () => {
@@ -76,7 +77,7 @@ useEffect(() => {
   //   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   //   { label: "Product management", icon: PackageSearch, path: "/Product-management" },
   //   { label: "Order Management", icon: PackageCheck, path: "/Order-Management" },
-  //   { label: "Manage Admins", icon:ShieldUser, path: "/manage-admins" },
+  // { label: "Manage Admins", icon:ShieldUser, path: "/manage-admins" },
   //   { label: "Earnings", icon: ReceiptIndianRupee, path: "/earnings" },
    
   //   { label: "Messages", icon: Mail, path: "/messages" },

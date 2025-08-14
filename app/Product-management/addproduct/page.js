@@ -28,6 +28,7 @@ import { Addproducts, Downloadtemplate } from "@/lib/API/Product/product";
 import Productimage from "@/public/Asset/Product1.png";
 import { useRouter } from "next/navigation";
 import { BaseUrl } from "@/lib/API/Baseurl";
+import Uploadbulk from "./Uploaddialog";
 
 const defaultSizes = [
   "Small",
@@ -144,7 +145,7 @@ export default function Component() {
 
   const [selectedSize, setSelectedSize] = useState("Small");
   const [selectedColor, setSelectedColor] = useState("#106C83");
-  const [previewImage, setPreviewImage] = useState(Productimage);
+  const [previewImage, setPreviewImage] = useState();
   const [thumbnailimages, setthumnailimage] = useState([]);
 
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -170,11 +171,11 @@ export default function Component() {
 
   const uniqueCategories = [
     ...new Map(
-      categories.map((item) => [item.CategoryId?._id, item.CategoryId])
+      categories?.map((item) => [item.CategoryId?._id, item.CategoryId])
     ).values(),
   ];
 
-  const filteredSubcategories = categories.filter(
+  const filteredSubcategories = categories?.filter(
     (item) => item.CategoryId?._id === formData.CategoryId
   );
 
@@ -204,7 +205,7 @@ export default function Component() {
     } else {
       setFormData((prev) => ({
         ...prev,
-        sizes: prev.sizes.filter((s) => s !== size),
+        sizes: prev.sizes?.filter((s) => s !== size),
       }));
     }
   };
@@ -225,8 +226,8 @@ export default function Component() {
 
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files || []);
-    if (files.length > 0) {
-      const urls = files.map((file) => URL.createObjectURL(file));
+    if (files?.length > 0) {
+      const urls = files?.map((file) => URL.createObjectURL(file));
       setPreviewImage(urls[0]); // Default preview is the first image
       setthumnailimage(urls);
       setFormData((prev) => ({
@@ -275,7 +276,7 @@ export default function Component() {
   const handleRemoveColor = (colorToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      colors: prev.colors.filter((color) => color !== colorToRemove),
+      colors: prev.colors?.filter((color) => color !== colorToRemove),
     }));
   };
 
@@ -293,7 +294,7 @@ export default function Component() {
   const handleRemoveSize = (sizeToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      sizes: prev.sizes.filter((size) => size !== sizeToRemove),
+      sizes: prev.sizes?.filter((size) => size !== sizeToRemove),
     }));
   };
 
@@ -311,7 +312,7 @@ export default function Component() {
   const handleRemoveFeature = (featureToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      Features: prev.Features.filter((feature) => feature !== featureToRemove),
+      Features: prev.Features?.filter((feature) => feature !== featureToRemove),
     }));
   };
 
@@ -435,7 +436,7 @@ export default function Component() {
       // Step 2: Extract image URLs from response
       const uploadedImageUrls = uploadResponse?.data?.map((img) => img);
 
-      if (!uploadedImageUrls || uploadedImageUrls.length === 0) {
+      if (!uploadedImageUrls || uploadedImageUrls?.length === 0) {
         throw new Error("No image URLs returned");
       }
 
@@ -477,7 +478,7 @@ export default function Component() {
         Yourprice: "",
         SellingPrice: "",
         Ecofriendly: true,
-        colors: defaultColors,
+        colors: [],
         Images: [],
         Stock: 0,
       });
@@ -525,6 +526,12 @@ export default function Component() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading file:", error);
+       addToast({
+        title: `Error downloading file`,
+        description: `Error downloading file:${error}`,
+        variant: "destructive",
+        duration: 5000,
+      });
     }
   };
 
@@ -570,12 +577,7 @@ export default function Component() {
           >
             Download bulk upload template
           </Button>
-          <Button
-            onClick={handleAddBulkProduct}
-            className="flex-1 bg-[#106C83] hover:bg-[#0d5a6e] cursor-pointer text-white"
-          >
-            Add Bulk Product
-          </Button>
+          <Uploadbulk/>
         </div>
       </div>
       <div className="flex gap-6 px-6 bg-gray-50 min-h-screen">
@@ -651,7 +653,7 @@ export default function Component() {
           <div className="mb-4">
             <p className="text-sm text-gray-600 mb-2">Features:</p>
             <div className="flex gap-2 flex-wrap">
-              {formData.Features.map((size) => (
+              {formData?.Features?.map((size) => (
                 <div
                   key={size}
                   className="flex flex-col justify-items-start gap-1 w-full"
@@ -863,7 +865,7 @@ export default function Component() {
                     {loading ? (
                       <span className="loader2"></span>
                     ) : (
-                      uniqueCategories.find(
+                      uniqueCategories?.find(
                         (cat) => cat?._id === formData.CategoryId
                       )?.Categoryname || "Select category"
                     )}
@@ -873,7 +875,7 @@ export default function Component() {
                   {loading ? (
                     <span className="loader2"></span>
                   ) : uniqueCategories.length > 0 ? (
-                    uniqueCategories.map((cat) => (
+                    uniqueCategories?.map((cat) => (
                       <SelectItem key={cat?._id} value={cat?._id}>
                         {cat?.Categoryname}
                       </SelectItem>
@@ -901,7 +903,7 @@ export default function Component() {
                     {loading ? (
                       <span className="loader2"></span>
                     ) : (
-                      categories.find(
+                      categories?.find(
                         (sub) => sub?._id === formData?.SubcategoryId
                       )?.Subcategoryname || "Select Sub-category"
                     )}
@@ -910,8 +912,8 @@ export default function Component() {
                 <SelectContent>
                   {loading ? (
                     <span className="loader2"></span>
-                  ) : filteredSubcategories.length > 0 ? (
-                    filteredSubcategories.map((sub) => (
+                  ) : filteredSubcategories?.length > 0 ? (
+                    filteredSubcategories?.map((sub) => (
                       <SelectItem key={sub?._id} value={sub?._id}>
                         {sub?.Subcategoryname}
                       </SelectItem>
@@ -939,7 +941,7 @@ export default function Component() {
                   <SelectValue placeholder="Select Measurement" />
                 </SelectTrigger>
                 <SelectContent>
-                  {measurement.map((measurement) => (
+                  {measurement?.map((measurement) => (
                     <SelectItem key={measurement} value={measurement?._id}>
                       {measurement?.measurement}
                     </SelectItem>
